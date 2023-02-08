@@ -1,0 +1,23 @@
+{
+    "name": "grozdanoveg/module4",
+    "description": "Posts management solution",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "BlogPostsHandling\\RestApi\\": "src/",
+            "BlogPostsHandling\\Tests\\": "testsrc/"
+        }
+    },
+    "require": {
+
+    },
+    "require-dev": {
+
+    },
+    "authors": [
+        {
+            "name": "Emil Grozdanov",
+            "email": "e_grozdanov@abv.bg"
+        }
+    ]
+}
