@@ -8,11 +8,13 @@
             "BlogPostsHandling\\Tests\\": "testsrc/"
         }
     },
-    "require": {
-
-    },
     "require-dev": {
-
+        "phpstan/phpstan": "^1.9",
+        "squizlabs/php_codesniffer": "^3.7"
+    },
+    "require": {
+        "slim/slim": "4.*",
+        "slim/psr7": "^1.6"
     },
     "authors": [
         {
