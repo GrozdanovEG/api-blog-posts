@@ -1,14 +1,16 @@
 <?php
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 require __DIR__ . '/../vendor/autoload.php';
 
 $app = AppFactory::create();
+require __DIR__ . '/../src/routes-management.php';
 
-$app->get('/', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("Hello world!");
-    return $response;
-});
+try {
+    $app->run();
+} catch (Exception $e) {
+    error_log($e->getFile().':'.$e->getLine() . ' ['.$e->getMessage().']');
+    echo 'Something went wrong!';
+} catch (Throwable $th) {
+    echo $th->getMessage();
+}
 
-$app->run();
