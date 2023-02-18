@@ -1,60 +1,33 @@
 <?php
+declare(strict_types=1);
+
+use BlogPostsHandling\Api\Controller\HomeController;
+use BlogPostsHandling\Api\Controller\AddPostController;
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 /* Application routes  */  // For now GET only
-$app->get('/', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("Application root");
-    return $response;
-});
+$app->get('/', HomeController::class);
 
-$app->get('/new/post', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("This route must create a new post");
-    return $response;
-});
+$app->post('/v1/new/post', AddPostController::class);
 
-$app->get('/read/post/{id}', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("This route must fetch a post by id");
-    return $response;
-});
+$app->get('/v1/read/post/{id}', GetPostController::class);
 
-$app->get('/update/post/{id}', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("This route must update a post by id");
-    return $response;
-});
+$app->put('/v1/update/post/{id}', UpdatePostController::class);
 
-$app->get('/delete/post/{id}', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("This route must delete a post by id");
-    return $response;
-}); // 4
+$app->delete('/v1/delete/post/{id}', DeletePostController::class); // 4
 
-$app->get('/new/category', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("This route must create a new category");
-    return $response;
-});
+$app->post('/v1/new/category', AddCategoryController::class);
 
-$app->get('/read/category/{id}', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("This route must fetch a category by id");
-    return $response;
-});
+$app->get('/v1/read/category/{id}', GetCategoryController::class);
 
-$app->get('/update/category/{id}', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("This route must update a category by id");
-    return $response;
-});
+$app->put('/v1/update/category/{id}', UpdateCategoryController::class);
 
-$app->get('/delete/category/{id}', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("This route must delete a category by id");
-    return $response;
-});  // 8
+$app->delete('/v1/delete/category/{id}', DeleteCategoryController::class);  // 8
 
-$app->get('/posts/slug/{slug}', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("This route must fetch post by given slug");
-    return $response;
-}); // 9
+$app->get('/v1/posts/slug/{slug}', GetPostsBySlugController::class); // 9
 
-$app->get('/post/{pid}/add/{cid}', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("This route must add categories to a post");
-    return $response;
-});  // 10
+$app->get('/v1/post/{pid}/add/{cid}', AddCategoryToPostsBController::class);
+/*This route must add categories to a post */
 /* Application routes ends */

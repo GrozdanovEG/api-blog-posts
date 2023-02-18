@@ -2,17 +2,18 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Entity;
 
-use DateTime;
+use DateTimeImmutable;
+use Ramsey\Uuid\UuidInterface;
 
 class Post 
 {
-  private string $id;
+  private UuidInterface $id;
   private string $title;
   private string $slug;
   private string $content;
   private string $thumbnail;
   private string $author;
-  private DateTime $postedAt;
+  private DateTimeImmutable $postedAt;
 
   public function __construct()
   {

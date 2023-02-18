@@ -15,7 +15,17 @@
     "require": {
         "slim/slim": "4.*",
         "slim/psr7": "^1.6",
-        "vlucas/phpdotenv": "^5.5"
+        "vlucas/phpdotenv": "^5.5",
+        "nyholm/psr7": "^1.5",
+        "nyholm/psr7-server": "^1.0",
+        "guzzlehttp/psr7": "^2",
+        "laminas/laminas-diactoros": "^2.24",
+        "php-di/slim-bridge": "^3.3",
+        "ext-pdo": "*",
+        "ramsey/uuid": "^4.7",
+        "zircote/swagger-php": "^3.2",
+        "beberlei/assert": "^3.3"
+
     },
     "authors": [
         {
