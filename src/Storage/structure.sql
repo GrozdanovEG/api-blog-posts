@@ -1,19 +1,17 @@
+CREATE DATABASE IF NOT EXISTS blogpostsapi;
 
-CREATE DATABASE IF NOT EXISTS blogposthandling;
-
-USE blogposthandling;
+USE blogpostsapi;
 
 CREATE TABLE IF NOT EXISTS posts (
       id VARCHAR(64) NOT NULL UNIQUE,
-      title VARCHAR(196) NOT NULL,
-      slug ...
+      title VARCHAR(128) NOT NULL,
+      slug VARCHAR(128) NOT NULL,
       content TEXT(8000) NOT NULL,
-      thumbnail VARCHAR(128),
+      thumbnail TEXT(20000),
       author VARCHAR(128) NOT NULL,
       posted_at Date NOT NULL,
       PRIMARY KEY (id)
 );
-
 
 CREATE TABLE IF NOT EXISTS categories (
     id VARCHAR(48) NOT NULL UNIQUE,

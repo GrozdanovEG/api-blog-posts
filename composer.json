@@ -4,7 +4,7 @@
     "type": "project",
     "autoload": {
         "psr-4": {
-            "BlogPostsHandling\\RestApi\\": "src/",
+            "BlogPostsHandling\\Api\\": "src/",
             "BlogPostsHandling\\Tests\\": "testsrc/"
         }
     },
@@ -14,7 +14,8 @@
     },
     "require": {
         "slim/slim": "4.*",
-        "slim/psr7": "^1.6"
+        "slim/psr7": "^1.6",
+        "vlucas/phpdotenv": "^5.5"
     },
     "authors": [
         {

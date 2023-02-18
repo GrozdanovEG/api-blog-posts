@@ -1,8 +1,11 @@
 <?php
+declare(strict_types=1);
+namespace BlogPostsHandling\Api\Entity;
+
+use DateTime;
 
 class Post 
 {
-
   private string $id;
   private string $title;
   private string $slug;
@@ -13,7 +16,7 @@ class Post
 
   public function __construct()
   {
-    
+      $this->postedAt = new DateTime('now');
   }
 
   public function id(): string
