@@ -4,12 +4,11 @@ declare(strict_types=1);
 use DI\Container;
 use Slim\Factory\AppFactory;
 use BlogPostsHandling\Api\Storage\GetPdoConnection;
-use PDO;
 
 require __DIR__ . '/../vendor/autoload.php';
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->safeLoad();
-
+//var_dump($_ENV);
 
 /* Loading and Running the application */
 try {

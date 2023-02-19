@@ -4,10 +4,9 @@ declare(strict_types=1);
 use BlogPostsHandling\Api\Controller\HomeController;
 use BlogPostsHandling\Api\Controller\AddPostController;
 
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use BlogPostsHandling\Api\Controller\OpenApiDocController;
 
-/* Application routes  */  // For now GET only
+/* Application routes  */
 $app->get('/', HomeController::class);
 
 $app->post('/v1/new/post', AddPostController::class);
@@ -26,8 +25,11 @@ $app->put('/v1/update/category/{id}', UpdateCategoryController::class);
 
 $app->delete('/v1/delete/category/{id}', DeleteCategoryController::class);  // 8
 
-$app->get('/v1/posts/slug/{slug}', GetPostsBySlugController::class); // 9
+$app->get('/v1/posts/slug/{slug}', GetPostsBySlugController::class);
 
-$app->get('/v1/post/{pid}/add/{cid}', AddCategoryToPostsBController::class);
+$app->put('/v1/post/{pid}/addto/{cid}', AddCategoryToAPostController::class);
 /*This route must add categories to a post */
+
+$app->get('/v1/apidocs', OpenApiDocController::class);
 /* Application routes ends */
+
