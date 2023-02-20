@@ -3,6 +3,17 @@ declare(strict_types=1);
 
 use BlogPostsHandling\Api\Controller\HomeController;
 use BlogPostsHandling\Api\Controller\AddPostController;
+use BlogPostsHandling\Api\Controller\GetPostController;
+use BlogPostsHandling\Api\Controller\UpdatePostController;
+use BlogPostsHandling\Api\Controller\DeletePostController;
+
+use BlogPostsHandling\Api\Controller\AddCategoryController;
+use BlogPostsHandling\Api\Controller\GetCategoryController;
+use BlogPostsHandling\Api\Controller\DeleteCategoryController;
+use BlogPostsHandling\Api\Controller\UpdateCategoryController;
+
+use BlogPostsHandling\Api\Controller\GetPostsBySlugController;
+use BlogPostsHandling\Api\Controller\AddCategoryToAPostController;
 
 use BlogPostsHandling\Api\Controller\OpenApiDocController;
 
@@ -10,6 +21,8 @@ use BlogPostsHandling\Api\Controller\OpenApiDocController;
 $app->get('/', HomeController::class);
 
 $app->post('/v1/new/post', AddPostController::class);
+/* Adding a thumbnail not decided yet whether is going to have a separate controller of the logic
+*  will be put indside the Add and Update controllers */
 
 $app->get('/v1/read/post/{id}', GetPostController::class);
 
