@@ -20,16 +20,6 @@ use BlogPostsHandling\Api\Controller\OpenApiDocController;
 /* Application routes  */
 $app->get('/', HomeController::class);
 
-$app->post('/v1/new/post', AddPostController::class);
-/* Adding a thumbnail not decided yet whether is going to have a separate controller of the logic
-*  will be put indside the Add and Update controllers */
-
-$app->get('/v1/read/post/{id}', GetPostController::class);
-
-$app->put('/v1/update/post/{id}', UpdatePostController::class);
-
-$app->delete('/v1/delete/post/{id}', DeletePostController::class); // 4
-
 $app->post('/v1/new/category', AddCategoryController::class);
 
 $app->get('/v1/read/category/{id}', GetCategoryController::class);
@@ -37,6 +27,16 @@ $app->get('/v1/read/category/{id}', GetCategoryController::class);
 $app->put('/v1/update/category/{id}', UpdateCategoryController::class);
 
 $app->delete('/v1/delete/category/{id}', DeleteCategoryController::class);  // 8
+
+$app->post('/v1/new/post', AddPostController::class);
+/* Adding a thumbnail not decided yet whether is going to have a separate controller of the logic
+*  will be put inside the Add and Update controllers */
+
+$app->get('/v1/read/post/{id}', GetPostController::class);
+
+$app->put('/v1/update/post/{id}', UpdatePostController::class);
+
+$app->delete('/v1/delete/post/{id}', DeletePostController::class); // 4
 
 $app->get('/v1/posts/slug/{slug}', GetPostsBySlugController::class);
 

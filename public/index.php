@@ -8,7 +8,10 @@ use BlogPostsHandling\Api\Storage\GetPdoConnection;
 require __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->safeLoad();
-//var_dump($_ENV);
+
+use BlogPostsHandling\Api\Storage\StorageData;
+use BlogPostsHandling\Api\Storage\DatabaseData;
+$dbDataObject = new DatabaseData( (new StorageData($_ENV))->dbData() );
 
 /* Loading and Running the application */
 try {
