@@ -1,9 +1,10 @@
 <?php
-
+declare(strict_types=1);
 namespace BlogPostsHandling\Api\Storage;
 
-class DatabaseData
+class DatabaseDataObject
 {
+    private string $databaseType;
     private string $host;
     private string $username;
     private string $password;
@@ -12,11 +13,18 @@ class DatabaseData
 
     public function __construct(array $dbData)
     {
+        $this->databaseType = $dbData['databaseType'];
         $this->host = $dbData['host'];
         $this->username = $dbData['username'];
         $this->password = $dbData['password'];
         $this->databaseName = $dbData['databaseName'];
         $this->port = $dbData['port'];
+    }
+
+
+    public function databaseType(): string
+    {
+        return $this->databaseType;
     }
 
     public function host(): string
@@ -39,8 +47,19 @@ class DatabaseData
         return $this->databaseName;
     }
 
-    public function generatePdoDsn(string $databaseType): string
+    public function port(): string
     {
-        return "{$databaseType}:host={$this->host()};dbname={$this->databaseName()}";
+        return $this->port;
+    }
+
+    public function generatePdoDsn(?string $databaseType = null): string
+    {
+        $dbType = $databaseType ?? $this->databaseType();
+        return "{$dbType}:host={$this->host()};port={$this->port()};dbname={$this->databaseName()}";
+    }
+
+    public function __toString(): string
+    {
+        return $this->generatePdoDsn();
     }
 }

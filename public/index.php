@@ -10,13 +10,17 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->safeLoad();
 
 use BlogPostsHandling\Api\Storage\StorageData;
-use BlogPostsHandling\Api\Storage\DatabaseData;
-$dbDataObject = new DatabaseData( (new StorageData($_ENV))->dbData() );
+use BlogPostsHandling\Api\Storage\DatabaseDataObject;
+use BlogPostsHandling\Api\Storage\DatabaseConnection;
+$dbdo = new DatabaseDataObject( (new StorageData($_ENV))->databaseData() );
+$connection = (new DatabaseConnection($dbdo) )->connect();
+
 
 /* Loading and Running the application */
 try {
     $container = new Container();
-    $container->set('pdoConn', GetPdoConnection::class);
+    $container->set('PdoDbConn', $connection);
+    //var_dump($container); exit;
 
     AppFactory::setContainer($container);
     $app = AppFactory::create();

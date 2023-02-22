@@ -4,7 +4,7 @@ namespace BlogPostsHandling\Api\Storage;
 
 class StorageData
 {
-    private array $dbData = [
+    private array $databaseData = [
         'host' => 'localhost',
         'username' => 'root',
         'password' => 'root',
@@ -15,18 +15,32 @@ class StorageData
 
     public function __construct(?array $env = [])
     {
-        if (isset($env))
-            $this->dbData = [
+        if (isset($env)) {
+            $this->databaseData = [
+                'databaseType' => ($env['DB_TYPE'] ?? 'mysql'),
                 'host' => ($env['DB_HOST'] ?? 'localhost'),
                 'username' => $env['DB_USER'],
                 'password' => $env['DB_PASS'],
                 'databaseName' => $env['DB_NAME'],
                 'port' =>  $env['DB_PORT'] ?? '3306'
             ];
+            /* $this->filenames to be populated if filesystem is used for storage  */
+        }
     }
 
-    public function dbData(): array
+    public function databaseData(): array
     {
-        return $this->dbData;
+        return $this->databaseData;
+    }
+
+    public function filesystemData(): array
+    {
+        return $this->filenames;
+    }
+
+    /** @return array    */
+    public function allStorageData(): array
+    {
+        return [$this->databaseData(), $this->filesystemData()];
     }
 }
