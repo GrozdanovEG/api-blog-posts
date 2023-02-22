@@ -12,15 +12,17 @@ $dotenv->safeLoad();
 use BlogPostsHandling\Api\Storage\StorageData;
 use BlogPostsHandling\Api\Storage\DatabaseDataObject;
 use BlogPostsHandling\Api\Storage\DatabaseConnection;
-$dbdo = new DatabaseDataObject( (new StorageData($_ENV))->databaseData() );
-$connection = (new DatabaseConnection($dbdo) )->connect();
 
+$dbdo = new DatabaseDataObject( (new StorageData($_ENV))->databaseData() );
+$pdoConnection = (new DatabaseConnection($dbdo) )->connect();
+$pdoConnection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$pdoConnection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
 /* Loading and Running the application */
 try {
     $container = new Container();
-    $container->set('PdoDbConn', $connection);
-    //var_dump($container); exit;
+    // @todo checking the Container documentation
+    $container->set('PdoDbConn', $pdoConnection);
 
     AppFactory::setContainer($container);
     $app = AppFactory::create();

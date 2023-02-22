@@ -1,10 +1,11 @@
 <?php
-
+declare(strict_types=1);
 namespace BlogPostsHandling\Api\Storage;
 
 class StorageData
 {
     private array $databaseData = [
+        'databaseType' => 'mysql',
         'host' => 'localhost',
         'username' => 'root',
         'password' => 'root',
@@ -15,7 +16,7 @@ class StorageData
 
     public function __construct(?array $env = [])
     {
-        if (isset($env)) {
+        if (count($env) > 0) {
             $this->databaseData = [
                 'databaseType' => ($env['DB_TYPE'] ?? 'mysql'),
                 'host' => ($env['DB_HOST'] ?? 'localhost'),
@@ -24,7 +25,7 @@ class StorageData
                 'databaseName' => $env['DB_NAME'],
                 'port' =>  $env['DB_PORT'] ?? '3306'
             ];
-            /* $this->filenames to be populated if filesystem is used for storage  */
+            /* $this->filenames[] to be populated if filesystem is used for storage  */
         }
     }
 
@@ -38,8 +39,8 @@ class StorageData
         return $this->filenames;
     }
 
-    /** @return array    */
-    public function allStorageData(): array
+    /** @return array  */
+    public function getAllStorageData(): array
     {
         return [$this->databaseData(), $this->filesystemData()];
     }

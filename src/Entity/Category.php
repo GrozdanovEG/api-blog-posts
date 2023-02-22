@@ -2,23 +2,32 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Entity;
 
-use http\Exception\BadQueryStringException;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class Category
 {
-    private UuidInterface $id;
+    private string $id;
     private string $name;
     private string $description;
 
-    public function __construct(string $name, string $description)
+    public function __construct(string $id, string $name, string $description)
     {
-        $this->id = Uuid::uuid4();
+        $this->id = $id;
         $this->name = $name;
         $this->description = $description;
 
     }
+
+    public static function createFromArrayAssoc(array $array): self
+    {
+        return new self(
+            ($array['id'] ?? $array['id_category'] ?? Uuid::uuid4()->toString()),
+            ($array['name'] ?? 'no name provided'),
+            ($array['description'] ?? 'no description provided')
+        );
+    }
+
 
     public function id(): UuidInterface
     { 
