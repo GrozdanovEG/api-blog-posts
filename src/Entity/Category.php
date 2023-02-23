@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Entity;
 
+use DI\Container;
 use Ramsey\Uuid\Uuid;
 
 class Category
