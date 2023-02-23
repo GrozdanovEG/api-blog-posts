@@ -3,7 +3,6 @@ declare(strict_types=1);
 namespace BlogPostsHandling\Api\Entity;
 
 use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
 
 class Category
 {
@@ -29,7 +28,7 @@ class Category
     }
 
 
-    public function id(): UuidInterface
+    public function id(): string
     { 
         return $this->id;
     }
@@ -46,6 +45,6 @@ class Category
 
     public function __toString(): string
     {
-        return '['.$this->id->toString().': ['.$this->name().': '.$this->description().']]';
+        return '['.$this->id().': ['.$this->name().': '.$this->description().']]';
     }
 }
