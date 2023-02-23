@@ -27,6 +27,6 @@ class AddCategoryController extends AbstractController
         else return new JsonResponse([
                 "message" => 'the category ['.$category->name().'] was not added',
                 "msgid" => 'category_storing_failed'
-            ], 400);
+            ], 500);
     }
 }

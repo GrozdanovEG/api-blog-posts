@@ -12,14 +12,14 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
      */
     public function store(Category $category): Category|false
     {
-        $pdoConnection = $this->setFromContainer((new ContainerFactory)())->pdo();
+        $this->pdo = $this->setFromContainer((new ContainerFactory)())->pdo();
 
-        $query =<<<QUERY
-           INSERT INTO categories (id, name, description)
-               VALUES
-               (:id, :name, :description);
-           QUERY;
-        $statement = $pdoConnection->prepare($query);
+        if ( $this->findById( $category->id() ) )
+            $query = 'UPDATE categories SET name = :name, description = :description WHERE id = :id';
+        else
+            $query = 'INSERT INTO categories (id, name, description) VALUES (:id, :name, :description);';
+
+        $statement = $this->pdo->prepare($query);
         $parameters = [
             'id' => $category->id(),
             'name' => $category->name(),
@@ -45,6 +45,19 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
      */
     public function findById(string $cid): Category|false
     {
-        // TODO: Implement findById() method.
+        $c = (new ContainerFactory)();
+        $this->pdo = $this->setFromContainer($c)->pdo();
+
+        $query = 'SELECT * FROM categories WHERE id = :id';
+
+        $statement = $this->pdo->prepare($query);
+        $parameters = ['id' => $cid];
+
+        if( $statement->execute($parameters) ) {
+            $inputs = $statement->fetch();
+            if($inputs && count($inputs)>0)
+                return Category::createFromArrayAssoc($inputs);
+        };
+        return false;
     }
 }
