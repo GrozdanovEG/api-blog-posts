@@ -37,7 +37,19 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
      */
     public function fetchAll(): array
     {
-        // TODO: Implement fetchAll() method.
+        $c = (new ContainerFactory)();
+        $this->pdo = $this->setFromContainer($c)->pdo();
+
+        $query = 'SELECT * FROM categories WHERE 1;';
+
+        $recordsFound = [];
+
+        if( $statement = $this->pdo->query($query) ) {
+            $results= $statement->fetchAll();
+            if($results && count($results) > 0)
+            foreach ($results as $rec) $recordsFound[] = Category::createFromArrayAssoc($rec);
+        }
+        return $recordsFound;
     }
 
     /**

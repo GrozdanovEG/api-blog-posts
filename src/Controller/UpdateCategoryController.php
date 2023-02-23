@@ -14,11 +14,13 @@ class UpdateCategoryController extends AbstractController
     {
         $inputs = json_decode($request->getBody()->getContents(), true);
         $inputs['id'] = $args['id'] ?? $inputs['id'];
+
+        // @todo Disabling update with no input data in the request body
         $category = Category::createFromArrayAssoc($inputs);
 
         $categoryRepo = new CategoryRepositoryByPdo();
 
-        if (  $categoryRepo->store($category) )
+        if ( $categoryRepo->store($category) )
             return new JsonResponse([
                 "message" => 'category ['.$category->name().'] successfully updated with the following data',
                 "msgid" => 'category_updated',

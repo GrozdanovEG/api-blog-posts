@@ -9,8 +9,9 @@ use BlogPostsHandling\Api\Controller\DeletePostController;
 
 use BlogPostsHandling\Api\Controller\AddCategoryController;
 use BlogPostsHandling\Api\Controller\GetCategoryController;
-use BlogPostsHandling\Api\Controller\DeleteCategoryController;
 use BlogPostsHandling\Api\Controller\UpdateCategoryController;
+use BlogPostsHandling\Api\Controller\DeleteCategoryController;
+use BlogPostsHandling\Api\Controller\ListCategoriesController;
 
 use BlogPostsHandling\Api\Controller\GetPostsBySlugController;
 use BlogPostsHandling\Api\Controller\AddCategoryToAPostController;
@@ -20,12 +21,14 @@ use BlogPostsHandling\Api\Controller\OpenApiDocController;
 /* Application routes  */
 $app->get('/', HomeController::class);
 
-$app->post('/v1/new/category', (new AddCategoryController($c)) );
-//$app->post('/v1/new/category', AddCategoryController::class);
+//$app->post('/v1/new/category', (new AddCategoryController($c)) );
+$app->post('/v1/new/category', AddCategoryController::class);
 
 $app->get('/v1/read/category/{id}', GetCategoryController::class);
 
 $app->put('/v1/update/category/{id}', UpdateCategoryController::class);
+
+$app->get('/v1/list/categories', ListCategoriesController::class);
 
 $app->delete('/v1/delete/category/{id}', DeleteCategoryController::class);  // 8
 
