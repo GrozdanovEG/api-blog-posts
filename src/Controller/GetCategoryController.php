@@ -14,7 +14,7 @@ class GetCategoryController
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $inputs = json_decode($request->getBody()->getContents(), true);
-        $categoryId = $inputs['id'];
+        $categoryId = $args['id'] ?? $inputs['id'];
 
         $categoryRepo = new CategoryRepositoryByPdo();
 
@@ -28,8 +28,8 @@ class GetCategoryController
             ], 200);
 
         else return new JsonResponse([
-            "message" => 'the category ['.$category->name().'] was not found',
-            "msgid" => 'category_storing_failed'
+            "message" => 'A category with id ['. $categoryId .'] was not found, nothing to be retreived',
+            "msgid" => 'category_not_found'
         ], 404);
     }
 }

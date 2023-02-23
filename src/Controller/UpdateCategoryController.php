@@ -13,6 +13,7 @@ class UpdateCategoryController extends AbstractController
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $inputs = json_decode($request->getBody()->getContents(), true);
+        $inputs['id'] = $args['id'] ?? $inputs['id'];
         $category = Category::createFromArrayAssoc($inputs);
 
         $categoryRepo = new CategoryRepositoryByPdo();

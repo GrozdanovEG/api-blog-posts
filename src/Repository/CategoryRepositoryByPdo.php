@@ -60,4 +60,18 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
         };
         return false;
     }
+
+    public function deleteById(string $cid): bool
+    {
+        $c = (new ContainerFactory)();
+        $this->pdo = $this->setFromContainer($c)->pdo();
+
+        $query = 'DELETE FROM categories WHERE id = :id';
+        $statement = $this->pdo->prepare($query);
+        $parameters = ['id' => $cid];
+
+        if( $statement->execute($parameters) ) return true;
+
+        return false;
+    }
 }
