@@ -16,16 +16,15 @@ class UpdateCategoryController extends AbstractController
         $category = Category::createFromArrayAssoc($inputs);
 
         $categoryRepo = new CategoryRepositoryByPdo();
-        //var_dump($categoryFromRepository); exit;
 
         if (  $categoryRepo->store($category) )
             return new JsonResponse([
                 "message" => 'category ['.$category->name().'] successfully updated with the following data',
-                "msgid" => 'category_added',
+                "msgid" => 'category_updated',
                 "catid" => $category->id(),
                 "catname" => $category->name(),
                 "catdescr" => $category->description()
-            ], 201);
+            ], 200);
 
         else return new JsonResponse([
             "message" => 'the category ['.$category->name().'] was not updated',

@@ -55,7 +55,7 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
 
         if( $statement->execute($parameters) ) {
             $inputs = $statement->fetch();
-            if($inputs && count($inputs)>0)
+            if($inputs && count($inputs) > 0)
                 return Category::createFromArrayAssoc($inputs);
         };
         return false;
