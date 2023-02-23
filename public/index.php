@@ -1,9 +1,8 @@
 <?php
 declare(strict_types=1);
-require __DIR__ . '/../common/appinit.php';
+require_once __DIR__ . '/../common/appinit.php';
 
 use Slim\Factory\AppFactory;
-
 
 /* Loading and Running the application */
 try {
@@ -12,7 +11,7 @@ try {
     $app = AppFactory::create();
 
     $app->addErrorMiddleware(true, true, true);
-    require __DIR__ . '/../src/routes-management.php';
+    require_once __DIR__ . '/../src/routes-management.php';
     $app->run();
 
 } catch (Exception $e) {

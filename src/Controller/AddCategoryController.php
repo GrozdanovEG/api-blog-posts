@@ -14,19 +14,25 @@ class AddCategoryController extends AbstractController
         $inputs = json_decode($request->getBody()->getContents(), true);
         $category = Category::createFromArrayAssoc($inputs);
 
+        $pdoConnection = null;
         if ($this->container->has('PdoDbConn')) {
-            $pdoConnection = $this->container->get('PdoDbConn');
+            $pdoConnection = $this->container?->get('PdoDbConn');
         }
 
-        //print_r($pdoConnection->query('SELECT * FROM blogpostsapi.categories'));
+        // Processing object storing logic
         $query =<<<QUERY
            INSERT INTO categories (id, name, description)
                VALUES
                (:id, :name, :description);
            QUERY;
+        $statement = $pdoConnection->prepare($query);
+        $parameters = [
+            'id' => $category->id(),
+            'name' => $category->name(),
+            'description' => $category->description()
+        ];
+        $statement->execute($parameters);
 
-
-        // to be made persistent
         return new JsonResponse([
             "message" => 'category ['.$category->name().'] added',
             "msgid" => 'category_added',

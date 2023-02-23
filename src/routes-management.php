@@ -20,8 +20,8 @@ use BlogPostsHandling\Api\Controller\OpenApiDocController;
 /* Application routes  */
 $app->get('/', HomeController::class);
 
-//$app->post('/v1/new/category', (new AddCategoryController($c)));
-$app->post('/v1/new/category', AddCategoryController::class);
+$app->post('/v1/new/category', (new AddCategoryController($c)) );
+//$app->post('/v1/new/category', AddCategoryController::class);
 
 $app->get('/v1/read/category/{id}', GetCategoryController::class);
 
