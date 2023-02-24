@@ -17,7 +17,7 @@ class RepositoryByPdo extends AbstractRepository
     }
 
     /** @var Container $container
-      * @return RepositoryByPdo|bool   */
+      * @return self|bool   */
     public function setFromContainer(): self|false
     {
         if ($this->container()->has('PdoDbConn')) {
@@ -27,7 +27,8 @@ class RepositoryByPdo extends AbstractRepository
         return false;
     }
 
-    public function pdo(): PDO
+    /** @return PDO|null */
+    public function pdo(): ?PDO
     {
         return $this->pdo;
     }

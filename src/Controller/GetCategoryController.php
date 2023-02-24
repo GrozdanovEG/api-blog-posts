@@ -21,9 +21,11 @@ class GetCategoryController
             return new JsonResponse([
                 "message" => 'category ['.$category->name().'] was successfully found',
                 "msgid" => 'category_found',
-                "id" => $category->id(),
-                "name" => $category->name(),
-                "description" => $category->description()
+                "category" => [
+                    "id" => $category->id(),
+                    "name" => $category->name(),
+                    "description" => $category->description()
+                ]
             ], 200);
 
         else return new JsonResponse([

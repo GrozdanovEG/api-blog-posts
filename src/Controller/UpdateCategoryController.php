@@ -35,9 +35,11 @@ class UpdateCategoryController
             return new JsonResponse([
                 "message" => 'category ['.$category->name().'] successfully updated with the following data',
                 "msgid" => 'category_updated',
-                "id" => $category->id(),
-                "name" => $category->name(),
-                "description" => $category->description()
+                "category" => [
+                    "id" => $category->id(),
+                    "name" => $category->name(),
+                    "description" => $category->description()
+                ]
             ], 200);
 
         else return new JsonResponse([

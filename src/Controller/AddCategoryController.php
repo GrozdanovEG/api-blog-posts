@@ -31,9 +31,11 @@ class AddCategoryController
             return new JsonResponse([
                 "message" => 'category ['.$category->name().'] successfully added',
                 "msgid" => 'category_added',
-                "id" => $category->id(),
-                "name" => $category->name(),
-                "description" => $category->description()
+                "category" => [
+                    "id" => $category->id(),
+                    "name" => $category->name(),
+                    "description" => $category->description()
+                ]
             ], 201);
 
         else return new JsonResponse([

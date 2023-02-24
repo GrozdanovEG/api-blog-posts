@@ -34,9 +34,11 @@ class DeleteCategoryController
             return new JsonResponse([
                 "message" => 'category ['.$category->name().'] was successfully deleted',
                 "msgid" => 'category_deleted',
-                "catid" => $category->id(),
-                "catname" => $category->name(),
-                "catdescr" => $category->description()
+                "category" => [
+                "id" => $category->id(),
+                "name" => $category->name(),
+                "description" => $category->description()
+                ]
             ], 200);
 
         else return new JsonResponse([

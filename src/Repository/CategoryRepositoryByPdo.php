@@ -3,7 +3,6 @@ declare(strict_types=1);
 namespace BlogPostsHandling\Api\Repository;
 
 use BlogPostsHandling\Api\Entity\Category;
-use BlogPostsHandling\Api\Factory\ContainerFactory;
 
 class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryRepositoryInterface
 {
@@ -12,6 +11,7 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
      */
     public function store(Category $category): Category|false
     {
+        /** @todo the logic to be moved to a query builder class/method */
         if ( $this->findById( $category->id() ) )
             $query = 'UPDATE categories SET name = :name, description = :description WHERE id = :id';
         else
@@ -60,6 +60,7 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
         if( $statement->execute($parameters) ) {
             $inputs = $statement->fetch();
             if($inputs && count($inputs) > 0)
+                // @todo validation can be added
                 return Category::createFromArrayAssoc($inputs);
         };
         return false;
