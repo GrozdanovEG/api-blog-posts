@@ -21,7 +21,6 @@ use BlogPostsHandling\Api\Controller\OpenApiDocController;
 /* Application routes  */
 $app->get('/', HomeController::class);
 
-//$app->post('/v1/new/category', (new AddCategoryController($c)) );
 $app->post('/v1/new/category', AddCategoryController::class);
 
 $app->get('/v1/read/category/{id}', GetCategoryController::class);
@@ -30,17 +29,17 @@ $app->put('/v1/update/category/{id}', UpdateCategoryController::class);
 
 $app->get('/v1/list/categories', ListCategoriesController::class);
 
-$app->delete('/v1/delete/category/{id}', DeleteCategoryController::class);  // 8
+$app->delete('/v1/delete/category/{id}', DeleteCategoryController::class);
 
 $app->post('/v1/new/post', AddPostController::class);
-/* Adding a thumbnail not decided yet whether is going to have a separate controller of the logic
+/* Adding a thumbnail not decided yet whether is going to have a separate controller or the logic
 *  will be put inside the Add and Update controllers */
 
 $app->get('/v1/read/post/{id}', GetPostController::class);
 
 $app->put('/v1/update/post/{id}', UpdatePostController::class);
 
-$app->delete('/v1/delete/post/{id}', DeletePostController::class); // 4
+$app->delete('/v1/delete/post/{id}', DeletePostController::class);
 
 $app->get('/v1/posts/slug/{slug}', GetPostsBySlugController::class);
 

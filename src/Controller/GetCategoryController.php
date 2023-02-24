@@ -2,7 +2,6 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
 
-use BlogPostsHandling\Api\Entity\Category;
 use BlogPostsHandling\Api\Repository\CategoryRepositoryByPdo;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
