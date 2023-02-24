@@ -5,7 +5,7 @@ namespace BlogPostsHandling\Api\Repository;
 use DI\Container;
 use PDO;
 
-class RepositoryByPdo
+class RepositoryByPdo extends AbstractRepository
 {
     /** @var PDO|null  */
     protected ?PDO $pdo;
@@ -13,14 +13,15 @@ class RepositoryByPdo
     public function __construct(?PDO $pdo = null)
     {
         if ($pdo) $this->pdo = $pdo;
+        else $this->pdo = $this->setFromContainer()->pdo();
     }
 
     /** @var Container $container
       * @return RepositoryByPdo|bool   */
-    public function setFromContainer(Container $container): self|false
+    public function setFromContainer(): self|false
     {
-        if ($container->has('PdoDbConn')) {
-            $this->pdo = $container->get('PdoDbConn');
+        if ($this->container()->has('PdoDbConn')) {
+            $this->pdo = $this->container()->get('PdoDbConn');
             return $this;
         }
         return false;

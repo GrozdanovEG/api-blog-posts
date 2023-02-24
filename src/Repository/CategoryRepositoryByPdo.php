@@ -12,8 +12,6 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
      */
     public function store(Category $category): Category|false
     {
-        $this->pdo = $this->setFromContainer((new ContainerFactory)())->pdo();
-
         if ( $this->findById( $category->id() ) )
             $query = 'UPDATE categories SET name = :name, description = :description WHERE id = :id';
         else
@@ -37,9 +35,6 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
      */
     public function fetchAll(): array
     {
-        $c = (new ContainerFactory)();
-        $this->pdo = $this->setFromContainer($c)->pdo();
-
         $query = 'SELECT * FROM categories WHERE 1;';
 
         $recordsFound = [];
@@ -57,9 +52,6 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
      */
     public function findById(string $cid): Category|false
     {
-        $c = (new ContainerFactory)();
-        $this->pdo = $this->setFromContainer($c)->pdo();
-
         $query = 'SELECT * FROM categories WHERE id = :id';
 
         $statement = $this->pdo->prepare($query);
@@ -75,9 +67,6 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
 
     public function deleteById(string $cid): bool
     {
-        $c = (new ContainerFactory)();
-        $this->pdo = $this->setFromContainer($c)->pdo();
-
         $query = 'DELETE FROM categories WHERE id = :id';
         $statement = $this->pdo->prepare($query);
         $parameters = ['id' => $cid];
