@@ -48,4 +48,15 @@ class Category
     {
         return '['.$this->id().': ['.$this->name().': '.$this->description().']]';
     }
+
+    public function toMap(): array
+    {
+        return ["id" => $this->id, "name" => $this->name, "description" => $this->description];
+    }
+
+    /* useless for now, might be removed */
+    public function toJsonString(): string
+    {
+        return '{"id":"'.$this->id().'", "name": "'.$this->name().'", "description": "'.$this->description().'"}';
+    }
 }

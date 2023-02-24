@@ -8,25 +8,36 @@ use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-class UpdateCategoryController extends AbstractController
+class UpdateCategoryController
 {
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $inputs = json_decode($request->getBody()->getContents(), true);
         $inputs['id'] = $args['id'] ?? $inputs['id'];
 
-        // @todo Disabling update with no input data in the request body
-        $category = Category::createFromArrayAssoc($inputs);
+        // @todo moving the validation logic to a separated class/layer
+        $validRequest = count($inputs) > 0;
+        foreach (['id', 'name', 'description'] as $key)
+            if ( !isset($inputs[$key]) || $inputs[$key] === '') $validRequest = false;
 
+        if(!$validRequest)
+            return new JsonResponse([
+                "message" => 'the category ['.$inputs['id'].'] was not updated, no sufficient input data provided',
+                "msgid" => 'category_update_failed',
+                "detail" => 'wrong_input_data'
+            ], 400);
+
+
+        $category = Category::createFromArrayAssoc($inputs);
         $categoryRepo = new CategoryRepositoryByPdo();
 
         if ( $categoryRepo->store($category) )
             return new JsonResponse([
                 "message" => 'category ['.$category->name().'] successfully updated with the following data',
                 "msgid" => 'category_updated',
-                "catid" => $category->id(),
-                "catname" => $category->name(),
-                "catdescr" => $category->description()
+                "id" => $category->id(),
+                "name" => $category->name(),
+                "description" => $category->description()
             ], 200);
 
         else return new JsonResponse([

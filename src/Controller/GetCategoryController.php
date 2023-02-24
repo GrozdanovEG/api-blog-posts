@@ -10,7 +10,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class GetCategoryController
 {
-
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $inputs = json_decode($request->getBody()->getContents(), true);
@@ -22,9 +21,9 @@ class GetCategoryController
             return new JsonResponse([
                 "message" => 'category ['.$category->name().'] was successfully found',
                 "msgid" => 'category_found',
-                "catid" => $category->id(),
-                "catname" => $category->name(),
-                "catdescr" => $category->description()
+                "id" => $category->id(),
+                "name" => $category->name(),
+                "description" => $category->description()
             ], 200);
 
         else return new JsonResponse([

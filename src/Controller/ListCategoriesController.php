@@ -6,6 +6,7 @@ use BlogPostsHandling\Api\Repository\CategoryRepositoryByPdo;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use function MongoDB\BSON\toJSON;
 
 class ListCategoriesController
 {
@@ -16,20 +17,17 @@ class ListCategoriesController
 
         if ( $categories = $categoryRepo->fetchAll() ) {
 
-            $jsonRepresentationCategoryList = [];
-            foreach ($categories as $cat)
-                $jsonRepresentationCategoryList[] = serialize($cat);
-
-            $categoriesEncoded = json_encode($jsonRepresentationCategoryList, JSON_UNESCAPED_UNICODE, 512);
+            $categoriesMap = [];
+            foreach ($categories as $c) $categoriesMap[] = $c->toMap();
 
             return new JsonResponse([
                 "message" => "categories successfully retrieved",
                 "msgid" => "categories_retrieved",
-                "categories" => $categoriesEncoded
+                "categories" => $categoriesMap
             ], 200);
-        }
 
-        else return new JsonResponse([
+        } else
+            return new JsonResponse([
             "message" => 'categories not available',
             "msgid" => 'categories_unavailable'
         ], 404);
