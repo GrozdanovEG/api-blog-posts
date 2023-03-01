@@ -25,6 +25,7 @@
         "ramsey/uuid": "^4.7",
         "zircote/swagger-php": "^3.2",
         "beberlei/assert": "^3.3",
+        "cocur/slugify": "^4.3"
     },
     "authors": [
         {

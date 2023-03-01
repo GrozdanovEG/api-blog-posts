@@ -4,7 +4,8 @@ namespace BlogPostsHandling\Api\Entity;
 
 use DateTimeImmutable;
 use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
+use Cocur\Slugify\Slugify;
+
 
 class Post 
 {
@@ -12,19 +13,19 @@ class Post
     private string $title;
     private string $slug;
     private string $content;
-    private string $thumbnail;
     private string $author;
+    private ?string $thumbnail;
     private ?DateTimeImmutable $postedAt;
 
     public function __construct(string $id, string $title, string $slug, string $content,
-                                string $thumbnail, string $author, ?DateTimeImmutable $postedAt = null)
+                                string $author, ?string $thumbnail = null, ?DateTimeImmutable $postedAt = null)
     {
         $this->id = $id;
         $this->title = $title;
         $this->slug = $slug;
         $this->content = $content;
-        $this->thumbnail = $thumbnail;
         $this->author = $author;
+        $this->thumbnail = $thumbnail;
         $this->postedAt = $postedAt ?? ( new DateTimeImmutable('now') );
     }
 
@@ -33,10 +34,11 @@ class Post
         return new self(
             ($array['id'] ?? $array['id_post'] ?? Uuid::uuid4()->toString()),
             ($array['title'] ?? 'no title provided'),
-            ($array['slug'] ?? 'no slug provided'),
+            ($array['slug'] ?? (new Slugify(['separator' => '-']))->slugify($array['title'])),
             ($array['content'] ?? 'no content provided'),
-            ($array['thumbnail'] ?? 'no thumbnail provided'),
-            ($array['posted_at'] ?? 'no posted at provided')
+            ($array['author'] ?? 'no author provided'),
+            ($array['thumbnail'] ?? null),
+            ($array['posted_at'] ?? (new DateTimeImmutable('now')) )
         );
     }
 
@@ -60,7 +62,7 @@ class Post
         return $this->content;
     }
 
-    public function thumbnail(): string
+    public function thumbnail(): ?string
     {
         return $this->thumbnail;
     }
@@ -78,6 +80,13 @@ class Post
     public function toMap(): array
     {
         /** @todo to be implemented */
-        return [];
+        return [
+            'id' => $this->id(),
+            'title' => $this->title(),
+            'author' => $this->author(),
+            'content' => $this->content(),
+            'slug' => $this->slug(),
+            'postedAt' => $this->postedAt()->format('M d Y, H:i:s'),
+        ];
     }
 }
