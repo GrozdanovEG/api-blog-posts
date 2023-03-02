@@ -13,6 +13,7 @@ class GetCategoryController
     {
         $inputs = json_decode($request->getBody()->getContents(), true);
         $categoryId = $args['id'] ?? $inputs['id'];
+        // @todo validation to be implemented
 
         $categoryRepo = new CategoryRepositoryByPdo();
 
@@ -20,15 +21,11 @@ class GetCategoryController
             return new JsonResponse([
                 "message" => 'category ['.$category->name().'] was successfully found',
                 "msgid" => 'category_found',
-                "category" => [
-                    "id" => $category->id(),
-                    "name" => $category->name(),
-                    "description" => $category->description()
-                ]
+                "category" => $category->toMap()
             ], 200);
 
         else return new JsonResponse([
-            "message" => 'A category with id ['. $categoryId .'] was not found, nothing to be retreived',
+            "message" => 'A category with id ['. $categoryId .'] was not found, nothing to be retrieved',
             "msgid" => 'category_not_found'
         ], 404);
     }

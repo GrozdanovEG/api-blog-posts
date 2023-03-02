@@ -31,6 +31,9 @@ class Post
 
     public static function createFromArrayAssoc(array $array): self
     {
+        $postedAt = $array['posted_at'] ?
+            (DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $array['posted_at'])) :
+            (new DateTimeImmutable('now'));
         return new self(
             ($array['id'] ?? $array['id_post'] ?? Uuid::uuid4()->toString()),
             ($array['title'] ?? 'no title provided'),
@@ -38,7 +41,7 @@ class Post
             ($array['content'] ?? 'no content provided'),
             ($array['author'] ?? 'no author provided'),
             ($array['thumbnail'] ?? null),
-            ($array['posted_at'] ?? (new DateTimeImmutable('now')) )
+            ($postedAt)
         );
     }
 
@@ -86,7 +89,7 @@ class Post
             'author' => $this->author(),
             'content' => $this->content(),
             'slug' => $this->slug(),
-            'postedAt' => $this->postedAt()->format('M d Y, H:i:s'),
+            'postedAt' => $this->postedAt()->format('Y-m-d H:i:s'),
         ];
     }
 }

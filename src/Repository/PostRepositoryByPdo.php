@@ -7,8 +7,6 @@ use PDO;
 
 class PostRepositoryByPdo extends RepositoryByPdo implements  PostRepositoryInterface
 {
-
-
     /**
      * @inheritDoc
      */
@@ -50,7 +48,15 @@ class PostRepositoryByPdo extends RepositoryByPdo implements  PostRepositoryInte
      */
     public function findById(string $pid): Post|false
     {
-        // TODO: Implement findById() method.
-        return new Post;
+        $query ='SELECT * FROM posts WHERE id = :id';
+        $statement = $this->pdo->prepare($query);
+        $parameters = ['id' => $pid];
+
+        if( $statement->execute($parameters) ) {
+            $inputs = $statement->fetch();
+            if($inputs && count($inputs) > 0)
+                return Post::createFromArrayAssoc($inputs);
+        };
+        return false;
     }
 }

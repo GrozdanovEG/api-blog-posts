@@ -32,13 +32,11 @@ class AddPostController
 
         if (  (new PostRepositoryByPdo())->store($post)
         //  storage logic to be added here for initial category if $inputs['category'] is set
-        )
-            return new JsonResponse([
+        ) return new JsonResponse([
                 "message" => 'post ['.$post->title().'] successfully added',
                 "msgid" => 'post_added',
                 "post" => $post->toMap()
             ], 201);
-
 
         return new JsonResponse([$post->toMap()]);
     }
