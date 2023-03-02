@@ -10,8 +10,9 @@ interface PostRepositoryInterface
       * @return Post|false */
     public function store(Post $post): Post|false;
 
-    /** @return Post[] */
-    public function fetchAll(): array;
+    /** @var string $slug
+     * @return Post|false */
+    public function findBySlug(string $slug): Post|false;
 
     /** @var string $pid
       * @return Post|false */

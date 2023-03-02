@@ -3,9 +3,8 @@ declare(strict_types=1);
 namespace BlogPostsHandling\Api\Repository;
 
 use BlogPostsHandling\Api\Entity\Post;
-use PDO;
 
-class PostRepositoryByPdo extends RepositoryByPdo implements  PostRepositoryInterface
+class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInterface
 {
     /**
      * @inheritDoc
@@ -83,6 +82,23 @@ class PostRepositoryByPdo extends RepositoryByPdo implements  PostRepositoryInte
 
         if( $statement->execute($parameters) ) return true;
 
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function findBySlug(string $slug): Post|false
+    {
+        $query ='SELECT * FROM posts WHERE slug = :slug';
+        $statement = $this->pdo->prepare($query);
+        $parameters = ['slug' => $slug];
+
+        if( $statement->execute($parameters) ) {
+            $inputs = $statement->fetch();
+            if($inputs && count($inputs) > 0)
+                return Post::createFromArrayAssoc($inputs);
+        };
         return false;
     }
 }

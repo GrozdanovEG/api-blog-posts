@@ -16,14 +16,10 @@ class ListCategoriesController
         $categoryRepo = new CategoryRepositoryByPdo();
 
         if ( $categories = $categoryRepo->fetchAll() ) {
-
-            $categoriesMap = [];
-            foreach ($categories as $c) $categoriesMap[] = $c->toMap();
-
             return new JsonResponse([
                 "message" => "categories successfully retrieved",
                 "msgid" => "categories_retrieved",
-                "categories" => $categoriesMap
+                "categories" => array_map(function($c){ return $c->toMap(); } , $categories)
             ], 200);
 
         } else
