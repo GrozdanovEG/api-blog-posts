@@ -13,17 +13,31 @@ class PostRepositoryByPdo extends RepositoryByPdo implements  PostRepositoryInte
     public function store(Post $post): Post|false
     {
         /** @to be implemented QueryBuilder */
-        $query =<<<QUERY
+        if ( $this->findById( $post->id() ) ) {
+            $query =<<<UPDATEQ
+                UPDATE posts SET 
+                    title = :title, 
+                    slug = :slug,
+                    content = :content,
+                    thumbnail = :thumbnail,
+                    author = :author,
+                    posted_at = :posted_at                  
+                    WHERE id = :id
+            UPDATEQ;
+        } else {
+            $query =<<<INSERTQ
             INSERT INTO posts (id, title, slug, content, thumbnail, author, posted_at)
-                VALUES (:id, :title, :slug, :content, :thumbnail, :author, :posted_at );
-        QUERY;
+                VALUES (:id, :title, :slug, :content, :thumbnail, :author, :posted_at);
+            INSERTQ;
+        }
+
         $statement = $this->pdo->prepare($query);
         $parameters = [
             'id' => $post->id(),
             'title' => $post->title(),
             'slug' => $post->slug(),
             'content' => $post->content(),
-            'thumbnail' => $post->thumbnail(),
+            'thumbnail' => ($post->thumbnail() ?? null),
             'author' => $post->author(),
             'posted_at' => $post->postedAt()->format('Y-m-d H:i:s')
         ];
@@ -31,6 +45,7 @@ class PostRepositoryByPdo extends RepositoryByPdo implements  PostRepositoryInte
         if( $statement->execute($parameters) ) {
             return $post;
         };
+
         return false;
     }
 

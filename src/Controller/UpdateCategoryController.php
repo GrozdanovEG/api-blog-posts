@@ -2,11 +2,11 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
 
-use BlogPostsHandling\Api\Entity\Category;
-use BlogPostsHandling\Api\Repository\CategoryRepositoryByPdo;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use BlogPostsHandling\Api\Entity\Category;
+use BlogPostsHandling\Api\Repository\CategoryRepositoryByPdo;
 
 class UpdateCategoryController
 {
@@ -26,7 +26,6 @@ class UpdateCategoryController
                 "msgid" => 'category_update_failed',
                 "detail" => 'wrong_input_data'
             ], 400);
-
 
         $category = Category::createFromArrayAssoc($inputs);
         $categoryRepo = new CategoryRepositoryByPdo();
