@@ -11,8 +11,8 @@ class GetPostController
 {
     public function __invoke(Request $request, Response $response, $args): Response
     {
-        $inputData = json_decode($request->getBody()->getContents(), true);
-        $postId = $args['id'] ?? $inputData['id'] ?? null;
+        $inputs = json_decode($request->getBody()->getContents(), true);
+        $postId = $args['id'] ?? $inputs['id'] ?? null;
 
         $postRepo = new PostRepositoryByPdo();
 
