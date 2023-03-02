@@ -74,4 +74,15 @@ class PostRepositoryByPdo extends RepositoryByPdo implements  PostRepositoryInte
         };
         return false;
     }
+
+    public function deleteById(string $pid): bool
+    {
+        $query = 'DELETE FROM posts WHERE id = :id';
+        $statement = $this->pdo->prepare($query);
+        $parameters = ['id' => $pid];
+
+        if( $statement->execute($parameters) ) return true;
+
+        return false;
+    }
 }

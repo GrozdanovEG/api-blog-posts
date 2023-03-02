@@ -29,16 +29,11 @@ class DeleteCategoryController
                 "msgid" => 'category_not_found'
             ], 404);
 
-        else
-        if ( $categoryRepo->deleteById( $category->id() ) )
+        elseif ( $categoryRepo->deleteById( $category->id() ) )
             return new JsonResponse([
                 "message" => 'category ['.$category->name().'] was successfully deleted',
                 "msgid" => 'category_deleted',
-                "category" => [
-                "id" => $category->id(),
-                "name" => $category->name(),
-                "description" => $category->description()
-                ]
+                "category" => $category->toMap()
             ], 200);
 
         else return new JsonResponse([
