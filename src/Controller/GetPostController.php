@@ -14,9 +14,7 @@ class GetPostController
         $inputs = json_decode($request->getBody()->getContents(), true);
         $postId = $args['id'] ?? $inputs['id'] ?? null;
 
-        $postRepo = new PostRepositoryByPdo();
-
-        if ( $post = $postRepo->findById($postId) ) {
+        if ( $post = (new PostRepositoryByPdo)->findById($postId) ) {
             return new JsonResponse([
                 "message" => 'post ['.$post->title().'] was successfully found',
                 "msgid" => 'post_found',

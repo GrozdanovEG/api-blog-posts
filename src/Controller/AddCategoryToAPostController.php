@@ -33,7 +33,7 @@ class AddCategoryToAPostController
         $validRequest = $post && $category;
         if (! $validRequest) {
             return new JsonResponse([
-                "message" => 'no sufficient input data provided',
+                "message" => 'invalid input data provided',
                 "msgid" => 'adding_category_to_post_failure',
                 "detail" => $details
             ], 400);
@@ -51,4 +51,3 @@ class AddCategoryToAPostController
         ], 400);
     }
 }
-

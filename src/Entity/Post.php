@@ -16,6 +16,8 @@ class Post
     private string $author;
     private ?string $thumbnail;
     private ?DateTimeImmutable $postedAt;
+    private array $categories = [];
+
 
     public function __construct(string $id, string $title, string $slug, string $content,
                                 string $author, ?string $thumbnail = null, ?DateTimeImmutable $postedAt = null)
@@ -81,16 +83,33 @@ class Post
         return $this->postedAt;
     }
 
+    /** @var Category $category
+     *  @return Post  */
+    public function addCategory(Category $category): self
+    {
+        $this->categories[] = $category;
+        return $this;
+    }
+
+    public function categories(): array
+    {
+        return $this->categories;
+    }
+
     public function toMap(): array
     {
-        /** @todo to be implemented */
         return [
             'id' => $this->id(),
             'title' => $this->title(),
-            'author' => $this->author(),
-            'content' => $this->content(),
             'slug' => $this->slug(),
+            'content' => $this->content(),
+            'thumbnail' => $this->thumbnail(),
+            'author' => $this->author(),
             'postedAt' => $this->postedAt()->format('Y-m-d H:i:s'),
+            'categories' => array_map(
+                function($c) {return $c->toMapShort();},
+                $this->categories()
+            )
         ];
     }
 }

@@ -44,7 +44,6 @@ $app->delete('/v1/delete/post/{id}', DeletePostController::class);
 $app->get('/v1/posts/slug/{slug}', GetPostsBySlugController::class);
 
 $app->post('/v1/post/{pid}/addto/{cid}', AddCategoryToAPostController::class);
-/*This route must add categories to a post */
 
 $app->get('/v1/apidocs', OpenApiDocController::class);
 /* Application routes ends */

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Repository;
 
-use BlogPostsHandling\Api\Entity\Post;
+use BlogPostsHandling\Api\Entity\{Post,Category};
 
 class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInterface
 {
@@ -11,7 +11,7 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
      */
     public function store(Post $post): Post|false
     {
-        /** @to be implemented QueryBuilder */
+        /** @todo To be moved to QueryBuilder */
         if ( $this->findById( $post->id() ) ) {
             $query =<<<UPDATEQ
                 UPDATE posts SET 
@@ -30,7 +30,6 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
             INSERTQ;
         }
 
-        $statement = $this->pdo->prepare($query);
         $parameters = [
             'id' => $post->id(),
             'title' => $post->title(),
@@ -41,7 +40,7 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
             'posted_at' => $post->postedAt()->format('Y-m-d H:i:s')
         ];
 
-        if( $statement->execute($parameters) ) {
+        if( ($this->pdo->prepare($query))->execute($parameters) ) {
             return $post;
         };
 
@@ -62,16 +61,27 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
      */
     public function findById(string $pid): Post|false
     {
-        $query ='SELECT * FROM posts WHERE id = :id';
-        $statement = $this->pdo->prepare($query);
+        $query =<<<QUERY
+                    SELECT p.id, p.title, p.slug, p.content, p.thumbnail, p.author, p.posted_at,
+                           pc.id_category AS cid, c.name  
+                    FROM posts AS p 
+                    JOIN posts_categories AS pc ON p.id = pc.id_post
+                    JOIN categories AS c ON c.id = pc.id_category
+                    WHERE p.id = :id;
+                QUERY;
+
+        $post = null;
+        $stmt = $this->pdo->prepare($query);
         $parameters = ['id' => $pid];
 
-        if( $statement->execute($parameters) ) {
-            $inputs = $statement->fetch();
-            if($inputs && count($inputs) > 0)
-                return Post::createFromArrayAssoc($inputs);
+        if( $stmt->execute($parameters) && $rows = $stmt->fetchAll() )
+            if (count($rows) > 0 ) {
+                $post = Post::createFromArrayAssoc($rows[0]);
+                foreach ( $rows as $r ) $post->addCategory(
+                        new Category($r['cid'], $r['name'], '')
+                    );
         };
-        return false;
+        return ($post !== null) ? $post : false;
     }
 
     public function deleteById(string $pid): bool

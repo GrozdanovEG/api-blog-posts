@@ -2,7 +2,6 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Entity;
 
-use DI\Container;
 use Ramsey\Uuid\Uuid;
 
 class Category
@@ -51,7 +50,12 @@ class Category
 
     public function toMap(): array
     {
-        return ["id" => $this->id, "name" => $this->name, "description" => $this->description];
+        return ['id' => $this->id, 'name' => $this->name, 'description' => $this->description];
+    }
+
+    public function toMapShort(): array
+    {
+        return ['id' => $this->id, 'name' => $this->name];
     }
 
     /* useless for now, might be removed */
