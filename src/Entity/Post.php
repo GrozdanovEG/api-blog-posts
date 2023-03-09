@@ -18,7 +18,6 @@ class Post
     private ?DateTimeImmutable $postedAt;
     private array $categories = [];
 
-
     public function __construct(string $id, string $title, string $slug, string $content,
                                 string $author, ?string $thumbnail = null, ?DateTimeImmutable $postedAt = null)
     {
