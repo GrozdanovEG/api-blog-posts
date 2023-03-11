@@ -95,7 +95,22 @@ class FileUploaded
 
     public function toMapShort(): array
     {
-        return ['filename' => $this->hostFilename, 'uri' => $this->getFullUri];
+        return [
+            'filename' => $this->hostFilename(),
+            'uri' => $this->getFullUri(),
+            ];
+    }
+
+    public function toMap(): array
+    {
+        return [
+            'filename' => $this->hostFilename(),
+            'customFilename' => $this->customFilename,
+            'folderPath' => $this->hostUploadFolderPath,
+            'hostRootUri' => $this->hostRootUri,
+            'fullUri' => $this->getFullUri(),
+            'base64Content' => $this->b64FileContent
+        ];
     }
 
     public function __toString(): string

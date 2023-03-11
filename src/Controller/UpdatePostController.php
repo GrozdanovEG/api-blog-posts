@@ -2,6 +2,7 @@
 
 namespace BlogPostsHandling\Api\Controller;
 
+use BlogPostsHandling\Api\Response\ResponseHandler;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -14,6 +15,7 @@ class UpdatePostController
     {
         $inputs = json_decode($request->getBody()->getContents(), true);
         $inputs['id'] = $args['id'] ?? $inputs['id'];
+        $responseHandler = new ResponseHandler();
 
         // @todo moving the validation logic to a separated class/layer
         $validRequest = count($inputs) > 0;
@@ -21,11 +23,13 @@ class UpdatePostController
             if ( !isset($inputs[$key]) || $inputs[$key] === '') $validRequest = false;
 
         if(!$validRequest)
-            return new JsonResponse([
-                "message" => 'the post ['.$inputs['id'].'] was not updated, no sufficient input data provided',
-                "msgid" => 'post_update_failed',
-                "detail" => 'wrong_input_data'
-            ], 400);
+            return $responseHandler
+                ->type('/v1/errors/wrong_input_data')
+                ->title('wrong_input_data')
+                ->status(400)
+                ->detail('the post ['.$inputs['id'].'] was not updated, no sufficient or invalid input data provided')
+                ->jsonSend();
+
 
         $post = Post::createFromArrayAssoc($inputs);
         $postRepository = new PostRepositoryByPdo();
@@ -33,22 +37,26 @@ class UpdatePostController
         $postFromRepository = $postRepository->findById( $post->id() );
 
         if ( $postFromRepository === false )
-            return new JsonResponse([
-                "message" => 'a post with id ['.$post->id().'] was not found, nothing to be updated',
-                "msgid" => 'post_id_not_found',
-                "detail" => 'invalid_post_id'
-            ], 404);
+            return $responseHandler
+                ->type('/v1/errors/post_id_not_found')
+                ->title('invalid_post_id')
+                ->status(404)
+                ->detail('a post with id ['.$post->id().'] was not found, nothing to be updated')
+                ->jsonSend(["post" => $post->toMap()]);
 
         elseif ( $postRepository->store($post) )
-            return new JsonResponse([
-                "message" => 'post ['.$post->title().'] successfully updated with the following data',
-                "msgid" => 'post_updated',
-                "post" => $post->toMap()
-            ], 200);
+            return $responseHandler
+                ->type('/v1/post_updated')
+                ->title('post_updated')
+                ->status(200)
+                ->detail('post ['.$post->title().'] successfully updated with the following data')
+                ->jsonSend(["post" => $post->toMap()]);
 
-        else return new JsonResponse([
-            "message" => 'the post ['.$post->title().'] was not updated',
-            "msgid" => 'post_update_failed'
-        ], 400);
+        else return $responseHandler
+            ->type('/v1/errors/post_update_failure')
+            ->title('post_update_failure')
+            ->status(400)
+            ->detail('the post ['.$post->title().'] was not updated')
+            ->jsonSend(["post" => $post->toMap()]);
     }
 }
