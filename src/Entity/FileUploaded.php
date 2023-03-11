@@ -25,7 +25,6 @@ class FileUploaded
         try{
             $b64Parts = explode(',', $b64SourceString);
             $this->b64FileContent = $b64Parts[count($b64Parts)-1];
-            // data:image/jpeg;base64
             $fileExtension = explode(';',
                     explode('/', $b64Parts[0])[1]
                 )[0];
@@ -53,9 +52,9 @@ class FileUploaded
         return $this->hostFilename();
     }
 
-    public function hostUploadFolder(): string
+    public function hostUploadUri(): string
     {
-        return $this->hostUploadFolder;
+        return $this->hostUploadUri;
     }
 
     public function b64FileContent(): string
@@ -70,7 +69,7 @@ class FileUploaded
 
     public function getFullUri(): string
     {
-        return $this->hostUploadFolder() . '/' .$this->hostFilename();
+        return $this->hostUploadUri() . '/' .$this->hostFilename();
     }
 
     public function __toString(): string

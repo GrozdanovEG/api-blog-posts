@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace BlogPostsHandling\Api\Controller;
 
-use BlogPostsHandling\Api\Entity\Post;
+use BlogPostsHandling\Api\Entity\{Post,FileUploaded};
 use BlogPostsHandling\Api\Repository\PostRepositoryByPdo;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-
+use BlogPostsHandling\Api\Entity\;
 use OpenApi\Annotations as OA;
 
 class AddPostController
@@ -22,6 +22,10 @@ class AddPostController
         foreach (['title', 'author', 'content'] as $key)
             if ( !isset($inputs[$key]) || $inputs[$key] === '') $validRequest = false;
 
+        if (isset($inputs['thumbnail'])) $thumbnail = new FileUploaded($inputs['thumbnail']);
+
+
+        //var_dump($thumbnail); exit;
         if(!$validRequest) return new JsonResponse([
             "message" => 'a new post cannot be created, no sufficient input data provided',
             "msgid" => 'post_creation_failed',

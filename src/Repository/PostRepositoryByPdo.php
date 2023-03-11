@@ -65,8 +65,8 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
                     SELECT p.id, p.title, p.slug, p.content, p.thumbnail, p.author, p.posted_at,
                            pc.id_category AS cid, c.name  
                     FROM posts AS p 
-                    JOIN posts_categories AS pc ON p.id = pc.id_post
-                    JOIN categories AS c ON c.id = pc.id_category
+                    LEFT JOIN posts_categories AS pc ON p.id = pc.id_post
+                    LEFT JOIN categories AS c ON c.id = pc.id_category
                     WHERE p.id = :id;
                 QUERY;
 
@@ -77,9 +77,10 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
         if( $stmt->execute($parameters) && $rows = $stmt->fetchAll() )
             if (count($rows) > 0 ) {
                 $post = Post::createFromArrayAssoc($rows[0]);
-                foreach ( $rows as $r ) $post->addCategory(
-                        new Category($r['cid'], $r['name'], '')
-                    );
+                foreach ( $rows as $r ) {
+                    if ($r['cid'] && $r['name'])
+                    $post->addCategory(  new Category($r['cid'], $r['name'], '') );
+                }
         };
         return ($post !== null) ? $post : false;
     }
