@@ -14,12 +14,12 @@ class Post
     private string $slug;
     private string $content;
     private string $author;
-    private ?string $thumbnail;
+    private FileUploaded|string $thumbnail;
     private ?DateTimeImmutable $postedAt;
     private array $categories = [];
 
     public function __construct(string $id, string $title, string $slug, string $content,
-                                string $author, ?string $thumbnail = null, ?DateTimeImmutable $postedAt = null)
+                                string $author, FileUploaded|string $thumbnail = '', ?DateTimeImmutable $postedAt = null)
     {
         $this->id = $id;
         $this->title = $title;
@@ -42,7 +42,7 @@ class Post
             ($array['slug'] ?? (new Slugify(['separator' => '-']))->slugify($array['title'])),
             ($array['content'] ?? 'no content provided'),
             ($array['author'] ?? 'no author provided'),
-            ($array['thumbnail'] ?? null),
+            ($array['thumbnail'] ?? ''),
             ($postedAt)
         );
     }
@@ -67,7 +67,7 @@ class Post
         return $this->content;
     }
 
-    public function thumbnail(): ?string
+    public function thumbnail(): FileUploaded|string
     {
         return $this->thumbnail;
     }
@@ -97,12 +97,14 @@ class Post
 
     public function toMap(): array
     {
+        $thnl = $this->thumbnail();
+
         return [
             'id' => $this->id(),
             'title' => $this->title(),
             'slug' => $this->slug(),
             'content' => $this->content(),
-            'thumbnail' => $this->thumbnail(),
+            'thumbnail' => ( ($thnl instanceof FileUploaded) ? $thnl->toMapShort() : '' ),
             'author' => $this->author(),
             'postedAt' => $this->postedAt()->format('Y-m-d H:i:s'),
             'categories' => array_map(
