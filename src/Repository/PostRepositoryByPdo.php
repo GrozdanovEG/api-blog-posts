@@ -87,7 +87,7 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
 
     public function deleteById(string $pid): bool
     {
-        $query = 'DELETE FROM posts WHERE id = :id';
+        $query = 'DELETE FROM posts_categories WHERE id_post = :id; DELETE FROM posts WHERE id = :id';
         $statement = $this->pdo->prepare($query);
         $parameters = ['id' => $pid];
 
