@@ -41,7 +41,7 @@ class FileUploaded
     {
         try {
             $this->hostUploadFolderPath = $_ENV['HOST_THUMBNAILS_PATH'];
-            $this->hostRootUri = $_ENV['HOST_ROOT_URI'];
+            $this->hostRootUri = $_ENV['HOST_ROOT_URI'] ?? $_SERVER['HTTP_HOST'];
             return true;
         } catch (\Throwable $th) {
             error_log($th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
