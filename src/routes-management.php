@@ -2,20 +2,10 @@
 declare(strict_types=1);
 
 use BlogPostsHandling\Api\Controller\HomeController;
-use BlogPostsHandling\Api\Controller\AddPostController;
-use BlogPostsHandling\Api\Controller\GetPostController;
-use BlogPostsHandling\Api\Controller\UpdatePostController;
-use BlogPostsHandling\Api\Controller\DeletePostController;
-
-use BlogPostsHandling\Api\Controller\AddCategoryController;
-use BlogPostsHandling\Api\Controller\GetCategoryController;
-use BlogPostsHandling\Api\Controller\UpdateCategoryController;
-use BlogPostsHandling\Api\Controller\DeleteCategoryController;
-use BlogPostsHandling\Api\Controller\ListCategoriesController;
-
+use BlogPostsHandling\Api\Controller\{AddPostController,GetPostController,UpdatePostController,DeletePostController};
 use BlogPostsHandling\Api\Controller\GetPostsBySlugController;
-use BlogPostsHandling\Api\Controller\AddCategoryToAPostController;
-
+use BlogPostsHandling\Api\Controller\{AddCategoryController,GetCategoryController,UpdateCategoryController,DeleteCategoryController};
+use BlogPostsHandling\Api\Controller\{ListCategoriesController,AddCategoryToAPostController};
 use BlogPostsHandling\Api\Controller\OpenApiDocController;
 
 /* Application routes  */

@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
-
-
 use BlogPostsHandling\Api\Repository\PostsCategoriesRepositoryByPdo;
 use BlogPostsHandling\Api\Response\ResponseHandler;
 use Psr\Http\Message\ResponseInterface as Response;
