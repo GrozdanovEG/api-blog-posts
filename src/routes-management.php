@@ -19,7 +19,7 @@ use BlogPostsHandling\Api\Controller\AddCategoryToAPostController;
 use BlogPostsHandling\Api\Controller\OpenApiDocController;
 
 /* Application routes  */
-$app->get('/', HomeController::class);
+$app->get('/v1', HomeController::class);
 
 $app->post('/v1/new/category', AddCategoryController::class);
 
@@ -32,8 +32,6 @@ $app->get('/v1/list/categories', ListCategoriesController::class);
 $app->delete('/v1/delete/category/{id}', DeleteCategoryController::class);
 
 $app->post('/v1/new/post', AddPostController::class);
-/* Adding a thumbnail not decided yet whether is going to have a separate controller or the logic
-*  will be put inside the Add and Update controllers */
 
 $app->get('/v1/read/post/{id}', GetPostController::class);
 

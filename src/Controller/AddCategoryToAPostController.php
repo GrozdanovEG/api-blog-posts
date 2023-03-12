@@ -4,7 +4,7 @@ namespace BlogPostsHandling\Api\Controller;
 
 
 use BlogPostsHandling\Api\Repository\PostsCategoriesRepositoryByPdo;
-use Laminas\Diactoros\Response\JsonResponse;
+use BlogPostsHandling\Api\Response\ResponseHandler;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use BlogPostsHandling\Api\Repository\CategoryRepositoryByPdo;
@@ -17,6 +17,8 @@ class AddCategoryToAPostController
         $inputs = json_decode($request->getBody()->getContents(), true);
         $postId = $args['pid'] ?? $inputs['pid'] ?? null;
         $categoryId = $args['cid'] ?? $inputs['cid'] ?? null;
+
+        $responseHandler = new ResponseHandler();
 
         $validRequest = isset($postId) && isset($categoryId);
 
@@ -32,22 +34,27 @@ class AddCategoryToAPostController
 
         $validRequest = $post && $category;
         if (! $validRequest) {
-            return new JsonResponse([
-                "message" => 'invalid input data provided',
-                "msgid" => 'adding_category_to_post_failure',
-                "detail" => $details
-            ], 400);
+            return $responseHandler
+                ->type('/v1/errors/wrong_input_data')
+                ->title('adding_category_to_post_failure')
+                ->status(400)
+                ->detail('no sufficient or invalid input data provided')
+                ->jsonSend($details);
 
         } elseif ( (new PostsCategoriesRepositoryByPdo)->store($post, $category) ) {
-            return new JsonResponse([
-                "message" => 'category {'.$category->name() .'} added to the post {'.$post->title().'}',
-                "msgid" => 'adding_category_to_post_success',
-            ], 200);
+            return $responseHandler
+                ->type('/v1/category_added_to_a_post')
+                ->title('adding_category_to_post_success')
+                ->status(200)
+                ->detail('category {'.$category->name() .'} added to the post {'.$post->title().'}')
+                ->jsonSend();
         }
 
-        return new JsonResponse([
-            "message" => 'operation failure',
-            "msgid" => 'operation_failure'
-        ], 400);
+        return $responseHandler
+            ->type('/v1/errors/operation_failure')
+            ->title('operation_failure')
+            ->status(500)
+            ->detail('category {'.$category->name() .'} was not added to the post {'.$post->title().'} due to a server error')
+            ->jsonSend();
     }
 }

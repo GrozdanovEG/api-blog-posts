@@ -6,7 +6,6 @@ namespace BlogPostsHandling\Api\Controller;
 use BlogPostsHandling\Api\Response\ResponseHandler;
 use BlogPostsHandling\Api\Entity\{Post,FileUploaded};
 use BlogPostsHandling\Api\Repository\PostRepositoryByPdo;
-use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use OpenApi\Annotations as OA;
@@ -38,7 +37,6 @@ class AddPostController
 
         $post = Post::createFromArrayAssoc($inputs);
 
-        //echo '<pre>';var_dump($post->thumbnail())  ;exit;
         if ( (new PostRepositoryByPdo())->store($post)  &&
             (isset($thumbnail) && $thumbnail->store(__DIR__.'/../../public/') )
         ) return $responseHandler
@@ -49,10 +47,10 @@ class AddPostController
             ->jsonSend(["post" => $post->toMap()]);
 
         else return $responseHandler
-            ->type('/v1/post_not_added')
+            ->type('/v1/errors/post_not_added')
             ->title('post_not_added')
-            ->status(400)
-            ->detail('a new post cannot be added')
+            ->status(500)
+            ->detail('a new post cannot be added due to a server error')
             ->jsonSend();
     }
 }

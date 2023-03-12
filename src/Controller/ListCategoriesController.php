@@ -3,7 +3,7 @@ declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
 
 use BlogPostsHandling\Api\Repository\CategoryRepositoryByPdo;
-use Laminas\Diactoros\Response\JsonResponse;
+use BlogPostsHandling\Api\Response\ResponseHandler;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -11,20 +11,22 @@ class ListCategoriesController
 {
     public function __invoke(Request $request, Response $response, $args): Response
     {
+        $responseHandler = new ResponseHandler();
+
         if ( $categories = (new CategoryRepositoryByPdo)->fetchAll() ) {
-            return new JsonResponse([
-                "message" => "categories successfully retrieved",
-                "msgid" => "categories_retrieved",
-                "categories" => array_map(
-                                   function($c){ return $c->toMap(); } ,
-                                   $categories
-                                )
-            ], 200);
+            return $responseHandler
+                ->type('/v1/categories_retrieved')
+                ->title('categories_retrieved')
+                ->status(200)
+                ->detail('categories successfully retrieved')
+                ->jsonSend(["categories" => array_map(fn($c) => $c->toMap(), $categories)]);
 
         } else
-            return new JsonResponse([
-            "message" => 'categories not available',
-            "msgid" => 'categories_unavailable'
-        ], 404);
+            return $responseHandler
+                ->type('/v1/categories_unavailable')
+                ->title('categories_unavailable')
+                ->status(404)
+                ->detail('categories not available')
+                ->jsonSend();
     }
 }

@@ -3,8 +3,6 @@ declare(strict_types=1);
 namespace BlogPostsHandling\Api\Response;
 
 use Laminas\Diactoros\Response\JsonResponse;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
 
 class ResponseHandler
 {
@@ -53,6 +51,7 @@ class ResponseHandler
     public function jsonSend(mixed $data = null): JsonResponse
     {
         $responseData = ['status' => $this->status];
+
         if (isset($data)) $responseData['data'] = $data;
         if (isset($this->type)) $responseData['type'] = $this->type;
         if (isset($this->title)) $responseData['title'] = $this->title;
@@ -62,13 +61,3 @@ class ResponseHandler
         return new JsonResponse($responseData, $this->status);
     }
 }
-
-/*
-$rh = new ResponseHandler();
-$rh->type('')
-    ->title('')
-->status()
-->detail('')
-    ->instance('')
-    ->jsonSend();
-*/

@@ -3,7 +3,7 @@ declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
 
 use BlogPostsHandling\Api\Repository\CategoryRepositoryByPdo;
-use Laminas\Diactoros\Response\JsonResponse;
+use BlogPostsHandling\Api\Response\ResponseHandler;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -13,21 +13,26 @@ class GetCategoryController
     {
         $inputs = json_decode($request->getBody()->getContents(), true);
         $categoryId = $args['id'] ?? $inputs['id'];
+
+        $responseHandler = new ResponseHandler();
         // @todo validation to be implemented
 
         $categoryRepo = new CategoryRepositoryByPdo();
 
         if ( $category = $categoryRepo->findById($categoryId) )
-            return new JsonResponse([
-                "message" => 'category ['.$category->name().'] was successfully found',
-                "msgid" => 'category_found',
-                "category" => $category->toMap()
-            ], 200);
+            return $responseHandler
+                ->type('/v1/category_found')
+                ->title('category_found')
+                ->status(200)
+                ->detail('category ['.$category->name().'] was successfully found')
+                ->jsonSend(['category' => $category->toMap()]);
 
-        else return new JsonResponse([
-            "message" => 'A category with id ['. $categoryId .'] was not found, nothing to be retrieved',
-            "msgid" => 'category_not_found'
-        ], 404);
+        else return $responseHandler
+            ->type('/v1/errors/category_not_found')
+            ->title('category_not_found')
+            ->status(404)
+            ->detail('A category with id ['. $categoryId .'] was not found, nothing to be retrieved')
+            ->jsonSend();
     }
 }
 

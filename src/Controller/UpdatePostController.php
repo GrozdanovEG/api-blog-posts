@@ -3,7 +3,6 @@
 namespace BlogPostsHandling\Api\Controller;
 
 use BlogPostsHandling\Api\Response\ResponseHandler;
-use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use BlogPostsHandling\Api\Entity\Post;
@@ -22,8 +21,8 @@ class UpdatePostController
         foreach (['id', 'title', 'author', 'content', 'slug'] as $key)
             if ( !isset($inputs[$key]) || $inputs[$key] === '') $validRequest = false;
 
-        if(!$validRequest)
-            return $responseHandler
+
+        if(!$validRequest) return $responseHandler
                 ->type('/v1/errors/wrong_input_data')
                 ->title('wrong_input_data')
                 ->status(400)

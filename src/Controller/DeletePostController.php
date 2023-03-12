@@ -3,7 +3,6 @@ declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
 
 use BlogPostsHandling\Api\Response\ResponseHandler;
-use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use BlogPostsHandling\Api\Repository\PostRepositoryByPdo;

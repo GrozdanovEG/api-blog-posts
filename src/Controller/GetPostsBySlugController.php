@@ -4,7 +4,6 @@ namespace BlogPostsHandling\Api\Controller;
 
 use BlogPostsHandling\Api\Repository\PostRepositoryByPdo;
 use BlogPostsHandling\Api\Response\ResponseHandler;
-use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -14,6 +13,7 @@ class GetPostsBySlugController
     {
         $inputs = json_decode($request->getBody()->getContents(), true);
         $slug = $args['slug'] ?? $inputs['slug'] ?? null;
+
         $responseHandler = new ResponseHandler();
 
         $postRepository = new PostRepositoryByPdo();
