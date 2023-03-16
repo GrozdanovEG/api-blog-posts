@@ -15,6 +15,6 @@ interface CategoryRepositoryInterface
     public function fetchAll(): array;
 
     /** @var string $cid
-      * @return Category|false */
-    public function findById(string $cid): Category|false;
+      * @return Category */
+    public function findById(string $cid): Category;
 }

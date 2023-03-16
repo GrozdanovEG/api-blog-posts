@@ -4,8 +4,10 @@ namespace BlogPostsHandling\Api\Controller;
 
 use BlogPostsHandling\Api\Repository\CategoryRepositoryByPdo;
 use BlogPostsHandling\Api\Response\ResponseHandler;
+use OpenApi\Tests\Fixtures\ThirdPartyAnnotations;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Throwable;
 
 class ListCategoriesController
 {
@@ -13,7 +15,8 @@ class ListCategoriesController
     {
         $responseHandler = new ResponseHandler();
 
-        if ( $categories = (new CategoryRepositoryByPdo)->fetchAll() ) {
+        try {
+            $categories = (new CategoryRepositoryByPdo)->fetchAll();
             return $responseHandler
                 ->type('/v1/categories_retrieved')
                 ->title('categories_retrieved')
@@ -21,12 +24,17 @@ class ListCategoriesController
                 ->detail('categories successfully retrieved')
                 ->jsonSend(["categories" => array_map(fn($c) => $c->toMap(), $categories)]);
 
-        } else
+        } catch (\Throwable $th) {
+            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}".PHP_EOL);
+
             return $responseHandler
                 ->type('/v1/categories_unavailable')
                 ->title('categories_unavailable')
                 ->status(404)
                 ->detail('categories not available')
                 ->jsonSend();
+        }
+
+
     }
 }

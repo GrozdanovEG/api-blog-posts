@@ -20,10 +20,6 @@ class DeletePostController
         $responseHandler = new ResponseHandler();
         $postRepository = new PostRepositoryByPdo();
 
-        $validRequest = isset($inputs['id']);
-        $post = null;
-
-        if($validRequest)
         try{
             $postInputValidator = new PostInputValidator($inputs);
             $postInputValidator->minimalValidation()->sendResult();

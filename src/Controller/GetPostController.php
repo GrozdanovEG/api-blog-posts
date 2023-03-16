@@ -36,6 +36,7 @@ class GetPostController
                 ->detail($nfe->getMessage() . 'Nothing to be retrieved. ')
                 ->jsonSend();
         }
+
         if ( $post instanceof Post) {
             return $responseHandler
                     ->type('/v1/resource_found')

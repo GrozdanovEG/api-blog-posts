@@ -3,19 +3,22 @@ declare(strict_types=1);
 namespace BlogPostsHandling\Api\Repository;
 
 use BlogPostsHandling\Api\Entity\Category;
+use DI\NotFoundException;
 
 class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryRepositoryInterface
 {
     /**
      * @inheritDoc
      */
-    public function store(Category $category): Category|false
+    public function store(Category $category): Category
     {
         /** @todo the logic to be moved to a query builder class/method */
-        if ( $this->findById( $category->id() ) )
+        try {
+            if ( $this->findById($category->id()) )
             $query = 'UPDATE categories SET name = :name, description = :description WHERE id = :id';
-        else
+        } catch (NotFoundException $nfe) {
             $query = 'INSERT INTO categories (id, name, description) VALUES (:id, :name, :description);';
+        }
 
         $statement = $this->pdo->prepare($query);
         $parameters = [
@@ -49,21 +52,26 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
 
     /**
      * @inheritDoc
+     * @throws NotFoundException
      */
-    public function findById(string $cid): Category|false
+    public function findById(string $cid): Category
     {
         $query = 'SELECT * FROM categories WHERE id = :id';
 
         $statement = $this->pdo->prepare($query);
         $parameters = ['id' => $cid];
+        $category = null;
 
         if( $statement->execute($parameters) ) {
             $inputs = $statement->fetch();
             if($inputs && count($inputs) > 0)
-                // @todo validation can be added
-                return Category::createFromArrayAssoc($inputs);
+                $category = Category::createFromArrayAssoc($inputs);
         };
-        return false;
+
+        if ($category === null)
+            throw new NotFoundException('A category with ID {'.$cid.'} was not found. ');
+
+        return $category;
     }
 
     public function deleteById(string $cid): bool

@@ -26,9 +26,9 @@ class AddCategoryToAPostController
         try {
             $postCategoryInputValidator = new PostCategoryInputValidator($inputs);
             $postCategoryInputValidator->minimalValidation()->sendResult();
-
             $category = $categoryRepository->findById($inputs['cid']);
             $post = $postRepository->findById($inputs['pid']);
+
         }  catch (InvalidInputsException $iie) {
             return $responseHandler
                 ->type('/v1/errors/wrong_input_data')
@@ -36,6 +36,7 @@ class AddCategoryToAPostController
                 ->status(400)
                 ->detail('no sufficient or invalid input data provided')
                 ->jsonSend($iie->getErrorMessages());
+
         } catch (NotFoundException $nfe) {
             return $responseHandler
                 ->type('/v1/errors/post_slug_not_found')
@@ -45,33 +46,24 @@ class AddCategoryToAPostController
                 ->jsonSend();
         }
 
-        $details = [];
-        if ($category === false) $details[] = 'No such category found. Nothing to be added.';
-        if ($post === false) $details[] = 'No such post found. Nothing to be added.';
-
-        $validRequest = $post && $category;
-        if (! $validRequest) {
+        $validRequest = bool($post && $category);
+        try {
+            if ( $validRequest && (new PostsCategoriesRepositoryByPdo)->store($post, $category) ) {
+                return $responseHandler
+                    ->type('/v1/category_added_to_a_post')
+                    ->title('adding_category_to_post_success')
+                    ->status(200)
+                    ->detail('category {'.$category->name() .'} added to the post {'.$post->title().'}')
+                    ->jsonSend();
+            }
+        } catch (\Throwable $th) {
+            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}".PHP_EOL);
             return $responseHandler
-                ->type('/v1/errors/wrong_input_data')
-                ->title('adding_category_to_post_failure')
-                ->status(400)
-                ->detail('no sufficient or invalid input data provided')
-                ->jsonSend($details);
-
-        } elseif ( (new PostsCategoriesRepositoryByPdo)->store($post, $category) ) {
-            return $responseHandler
-                ->type('/v1/category_added_to_a_post')
-                ->title('adding_category_to_post_success')
-                ->status(200)
-                ->detail('category {'.$category->name() .'} added to the post {'.$post->title().'}')
+                ->type('/v1/errors/operation_failure')
+                ->title('operation_failure')
+                ->status(500)
+                ->detail('a category was not added to a post due to a server error')
                 ->jsonSend();
         }
-
-        return $responseHandler
-            ->type('/v1/errors/operation_failure')
-            ->title('operation_failure')
-            ->status(500)
-            ->detail('category {'.$category->name() .'} was not added to the post {'.$post->title().'} due to a server error')
-            ->jsonSend();
     }
 }

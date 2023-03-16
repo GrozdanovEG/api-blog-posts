@@ -59,7 +59,7 @@ class UpdatePostController
         else return $responseHandler
             ->type('/v1/errors/post_update_failure')
             ->title('post_update_failure')
-            ->status(400)
+            ->status(500)
             ->detail('the post ['.$post->title().'] was not updated')
             ->jsonSend(["post" => $post->toMap()]);
     }

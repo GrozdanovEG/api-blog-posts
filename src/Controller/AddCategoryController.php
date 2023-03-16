@@ -5,6 +5,8 @@ namespace BlogPostsHandling\Api\Controller;
 use BlogPostsHandling\Api\Entity\Category;
 use BlogPostsHandling\Api\Repository\CategoryRepositoryByPdo;
 use BlogPostsHandling\Api\Response\ResponseHandler;
+use BlogPostsHandling\Api\Validator\CategoryInputValidator;
+use BlogPostsHandling\Api\Validator\InvalidInputsException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -13,35 +15,43 @@ class AddCategoryController
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $inputs = json_decode($request->getBody()->getContents(), true);
+
         $responseHandler = new ResponseHandler();
+        $categoryRepository = new CategoryRepositoryByPdo();
 
-         // @todo moving and improving the validation logic to a separated class/layer
-        $validRequest = count($inputs) > 0;
-        foreach (['name', 'description'] as $key)
-            if ( !isset($inputs[$key]) || $inputs[$key] === '') $validRequest = false;
-
-        if(!$validRequest) return $responseHandler
-            ->type('/v1/errors/wrong_input_data')
-            ->title('category_creation_failure')
-            ->status(400)
-            ->detail('a new category cannot be created, no sufficient or invalid input data provided')
-            ->jsonSend();
+        try {
+            $categoryInputValidator = new CategoryInputValidator($inputs);
+            $categoryInputValidator->defaultValidation()->sendResult();
+        } catch (InvalidInputsException $iie) {
+            return $responseHandler
+                ->type('/v1/errors/wrong_input_data')
+                ->title('wrong_input_data')
+                ->status(400)
+                ->detail('A new category cannot be added, no sufficient or invalid input data provided')
+                ->jsonSend($iie->getErrorMessages());
+        }
 
         $category = Category::createFromArrayAssoc($inputs);
 
-        if (  (new CategoryRepositoryByPdo())->store($category) )
-            return $responseHandler
-                ->type('/v1/errors/category_added')
-                ->title('new_category_added')
-                ->status(201)
-                ->detail('category ['.$category->name().'] successfully added')
-                ->jsonSend([$category->toMap()]);
+        try {
+            if (  $categoryRepository->store($category) )
+                return $responseHandler
+                    ->type('/v1/errors/category_added')
+                    ->title('new_category_added')
+                    ->status(201)
+                    ->detail('category ['.$category->name().'] successfully added')
+                    ->jsonSend([$category->toMap()]);
 
-        else return $responseHandler
-            ->type('/v1/errors/category_storing_failed')
-            ->title('category_creation_failure')
-            ->status(500)
-            ->detail('the category ['.$category->name().'] was not added due to a server error')
-            ->jsonSend();
+        } catch (\Throwable $th) {
+            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}".PHP_EOL);
+            return $responseHandler
+                ->type('/v1/errors/category_storing_failed')
+                ->title('category_creation_failure')
+                ->status(500)
+                ->detail('the category ['.$category->name().'] was not added due to a server error')
+                ->jsonSend();
+        }
+
+
     }
 }

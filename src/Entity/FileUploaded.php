@@ -17,7 +17,9 @@ class FileUploaded
                                 ?string $customFilename = '')
     {
         if ($hostFilename !== '') $this->hostFilename = $hostFilename;
-        if ( $this->extractPropertiesFromB64String($b64SourceString, $hostFilename) ) {
+        if ($b64SourceString !== '' &&
+            $this->extractPropertiesFromB64String($b64SourceString, $hostFilename) )
+        {
             $this->customFilename = ($customFilename !== '') ? $customFilename : $this->hostFilename;
         }
         $this->extractPropertiesFromEnvironment();
