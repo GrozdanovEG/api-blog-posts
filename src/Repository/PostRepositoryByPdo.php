@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Repository;
 
+use DI\NotFoundException;
 use BlogPostsHandling\Api\Entity\{FileUploaded, Post, Category};
 
 class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInterface
@@ -49,6 +50,7 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
 
     /**
      * @inheritDoc
+     * @throws NotFoundException
      */
     public function findById(string $pid): Post|false
     {
@@ -73,7 +75,10 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
                     $post->addCategory(  new Category($r['cid'], $r['name'], '') );
                 }
         };
-        return ($post !== null) ? $post : false;
+        if ($post === null)
+            throw new NotFoundException('A post with ID {'.$pid.'} was not found. ');
+
+        return $post;
     }
 
     public function deleteById(string $pid): bool
@@ -83,7 +88,8 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
             $thumbnail = new FileUploaded('',$thumbnailFileName);
             $thumbnail->delete(__DIR__.'/../../public/');
         } catch(\Throwable $th) {
-            error_log('A problem with the thumbnail file deletion occurred:: ' . $th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
+            error_log('A problem with the thumbnail file deletion occurred:: ' .
+                $th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
         }
 
         $query = 'DELETE FROM posts_categories WHERE id_post = :id; DELETE FROM posts WHERE id = :id';

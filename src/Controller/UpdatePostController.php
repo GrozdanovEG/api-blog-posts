@@ -1,12 +1,15 @@
 <?php
-
+declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
 
-use BlogPostsHandling\Api\Response\ResponseHandler;
+use DI\NotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use BlogPostsHandling\Api\Entity\Post;
 use BlogPostsHandling\Api\Repository\PostRepositoryByPdo;
+use BlogPostsHandling\Api\Response\ResponseHandler;
+use BlogPostsHandling\Api\Validator\PostInputValidator;
+use BlogPostsHandling\Api\Validator\InvalidInputsException;
 
 class UpdatePostController
 {
@@ -15,35 +18,37 @@ class UpdatePostController
         $inputs = json_decode($request->getBody()->getContents(), true);
         $inputs['id'] = $args['id'] ?? $inputs['id'];
         $responseHandler = new ResponseHandler();
-
-        // @todo moving the validation logic to a separated class/layer
-        $validRequest = count($inputs) > 0;
-        //foreach (['id', 'title', 'author', 'content', 'slug'] as $key)
-          //  if ( !isset($inputs[$key]) || $inputs[$key] === '') $validRequest = false;
-
-
-        if(!$validRequest) return $responseHandler
-                ->type('/v1/errors/wrong_input_data')
-                ->title('wrong_input_data')
-                ->status(400)
-                ->detail('the post ['.$inputs['id'].'] was not updated, no sufficient or invalid input data provided')
-                ->jsonSend();
-
-
-        $post = Post::createFromArrayAssoc($inputs);
         $postRepository = new PostRepositoryByPdo();
 
-        $postFromRepository = $postRepository->findById( $post->id() );
+        $validRequest = isset($inputs['id']);
 
-        if ( $postFromRepository === false )
+        if ($validRequest)
+        try {
+            $postFromRepository = $postRepository->findById( $inputs['id'] );
+            $postInputValidator = new PostInputValidator($inputs);
+            $postInputValidator
+                ->populateWithObjectData($postFromRepository)
+                ->fullValidation()
+                ->sendResult();
+        } catch (NotFoundException $nfe) {
             return $responseHandler
                 ->type('/v1/errors/post_id_not_found')
                 ->title('invalid_post_id')
                 ->status(404)
-                ->detail('a post with id ['.$post->id().'] was not found, nothing to be updated')
-                ->jsonSend(["post" => $post->toMap()]);
+                ->detail($nfe->getMessage() . 'Nothing to be updated. ')
+                ->jsonSend();
+        } catch (InvalidInputsException $iie) {
+            return $responseHandler
+                ->type('/v1/errors/wrong_input_data')
+                ->title('wrong_input_data')
+                ->status(400)
+                ->detail('the post ['.$inputs['id'].'] was not updated, no sufficient or invalid input data provided')
+                ->jsonSend($iie->getErrorMessages());
+        }
 
-        elseif ( $postRepository->store($post) )
+        $post = Post::createFromArrayAssoc($inputs);
+
+        if ( $postRepository->store($post) )
             return $responseHandler
                 ->type('/v1/post_updated')
                 ->title('post_updated')
