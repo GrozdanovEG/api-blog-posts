@@ -2,7 +2,11 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
 
+use BlogPostsHandling\Api\Entity\Post;
 use BlogPostsHandling\Api\Response\ResponseHandler;
+use BlogPostsHandling\Api\Validator\InvalidInputsException;
+use BlogPostsHandling\Api\Validator\PostInputValidator;
+use DI\NotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use BlogPostsHandling\Api\Repository\PostRepositoryByPdo;
@@ -12,31 +16,36 @@ class DeletePostController
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $inputs = json_decode($request->getBody()->getContents(), true);
-        $postId = $args['id'] ?? $inputs['id'];
-
+        $inputs['id'] = $args['id'] ?? $inputs['id'] ?? null;
         $responseHandler = new ResponseHandler();
-
-        /** @todo to be moved in separate Validation layer  */
-        if ($postId === null)
-            return $responseHandler
-                ->type('/v1/errors/post_not_found')
-                ->title('invalid_post_id')
-                ->status(400)
-                ->detail('Invalid post ID provided')
-                ->jsonSend(["msgid" => 'invalid_post_id']);
-
         $postRepository = new PostRepositoryByPdo();
-        $post = $postRepository->findById($postId);
 
-        if (! $post )
+        $validRequest = isset($inputs['id']);
+        $post = null;
+
+        if($validRequest)
+        try{
+            $postInputValidator = new PostInputValidator($inputs);
+            $postInputValidator->minimalValidation()->sendResult();
+            $post = $postRepository->findById( $inputs['id'] );
+        } catch (NotFoundException $nfe) {
             return $responseHandler
                 ->type('/v1/errors/post_id_not_found')
-                ->title('invalid_post_id')
+                ->title('post_id_not_found')
                 ->status(404)
-                ->detail('A post with id ['. $postId .'] was not found, nothing to be deleted')
-                ->jsonSend(["msgid" => 'post_id_not_found']);
+                ->detail($nfe->getMessage() . 'Nothing to be deleted. ')
+                ->jsonSend();
+        } catch (InvalidInputsException $iie) {
+            return $responseHandler
+                ->type('/v1/errors/wrong_input_data')
+                ->title('wrong_input_data')
+                ->status(400)
+                ->detail('the post ['.$inputs['id'].'] was not deleted, no sufficient or invalid input data provided')
+                ->jsonSend($iie->getErrorMessages());
+        }
 
-        elseif ( $postRepository->deleteById( $post->id() ) )
+        if (($post instanceof Post) &&
+             $postRepository->deleteById($post->id()) )
             return $responseHandler
                 ->type('/v1/post_deleted')
                 ->title('Post deleted')
@@ -44,12 +53,12 @@ class DeletePostController
                 ->detail('post ['.$post->title().'] was successfully deleted')
                 ->jsonSend(["post" => $post->toMap()]);
 
-        else
-            return $responseHandler
-                ->type('/v1/errors/post_deletion_failure')
-                ->title('invalid_post_id')
-                ->status(400)
-                ->detail('the post ['.$post->title().'] was not deleted')
-                ->jsonSend(["msgid" => 'post_deletion_failure']);
+
+        return $responseHandler
+            ->type('/v1/errors/post_deletion_failure')
+            ->title('post_not_deleted')
+            ->status(500)
+            ->detail('the post ['.$post->title().'] was not deleted for unknown reason')
+            ->jsonSend(["msgid" => 'post_deletion_failure']);
     }
 }

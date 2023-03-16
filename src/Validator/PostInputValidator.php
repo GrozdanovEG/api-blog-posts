@@ -15,6 +15,11 @@ class PostInputValidator extends InputValidator
 
     public function defaultValidation(): self
     {
+        foreach (['title', 'content', 'thumbnail', 'author'] as $key) {
+            if ( !isset($this->inputFields[$key]) || $this->inputFields[$key] === '') {
+                $this->errorMessages[] = 'Invalid {' . $key . '} input provided! ';
+            }
+        }
         return $this;
     }
 
@@ -29,6 +34,14 @@ class PostInputValidator extends InputValidator
         if ($postedAtInput === null) {
             $this->errorMessages[] = 'Invalid { postedAt } input provided! ';
         }
+        return $this;
+    }
+
+    public function slugValidation(): self
+    {
+        if ( !isset($this->inputFields['slug']) || $this->inputFields['slug'] === '')
+            $this->errorMessages[] = 'Invalid { slug } input provided! ';
+
         return $this;
     }
 

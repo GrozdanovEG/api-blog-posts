@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
 
 use BlogPostsHandling\Api\Response\ResponseHandler;
+use BlogPostsHandling\Api\Validator\InvalidInputsException;
+use BlogPostsHandling\Api\Validator\PostInputValidator;
+use DI\NotFoundException;
 use BlogPostsHandling\Api\Entity\{Post,FileUploaded};
 use BlogPostsHandling\Api\Repository\PostRepositoryByPdo;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -15,28 +18,30 @@ class AddPostController
     {
         $inputs = json_decode($request->getBody()->getContents(), true);
         $responseHandler = new ResponseHandler();
+        $postRepository = new PostRepositoryByPdo();
 
-        // @todo moving and improving the validation logic to a separated class/layer
-        $validRequest = count($inputs) > 0;
-        foreach (['title', 'author', 'content'] as $key)
-            if ( !isset($inputs[$key]) || $inputs[$key] === '') $validRequest = false;
+        try {
+            $postInputValidator = new PostInputValidator($inputs);
+            $postInputValidator
+                ->defaultValidation()
+                ->sendResult();
+        } catch (InvalidInputsException $iie) {
+            return $responseHandler
+                ->type('/v1/errors/wrong_input_data')
+                ->title('wrong_input_data')
+                ->status(400)
+                ->detail('new post not created, no sufficient or invalid input data provided')
+                ->jsonSend($iie->getErrorMessages());
+        }
 
         if (isset($inputs['thumbnail'])) {
             $thumbnail = new FileUploaded($inputs['thumbnail']);
             $inputs['thumbnail'] = $thumbnail;
         }
 
-        if(!$validRequest)
-            return $responseHandler
-                ->type('/v1/errors/wrong_input_data')
-                ->title('post_creation_failed')
-                ->status(400)
-                ->detail('a new post cannot be created, no sufficient input data provided')
-                ->jsonSend();
-
         $post = Post::createFromArrayAssoc($inputs);
 
-        if ( (new PostRepositoryByPdo())->store($post)  &&
+        if ( $postRepository->store($post)  &&
             (isset($thumbnail) && $thumbnail->store(__DIR__.'/../../public/') )
         ) return $responseHandler
             ->type('/v1/post_added')

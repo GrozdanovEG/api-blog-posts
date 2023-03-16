@@ -13,7 +13,8 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
     public function store(Post $post): Post|false
     {
         /** @todo To be moved to QueryBuilder */
-        if ( $this->findById( $post->id() ) ) {
+        try {
+            $this->findById( $post->id() );
             $query =<<<UPDATEQ
                 UPDATE posts SET 
                     title = :title, 
@@ -24,7 +25,7 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
                     posted_at = :posted_at                  
                     WHERE id = :id
             UPDATEQ;
-        } else {
+        } catch (NotFoundException $nfe) {
             $query =<<<INSERTQ
             INSERT INTO posts (id, title, slug, content, thumbnail, author, posted_at)
                 VALUES (:id, :title, :slug, :content, :thumbnail, :author, :posted_at);
