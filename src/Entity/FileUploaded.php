@@ -12,29 +12,37 @@ class FileUploaded
     private string $customFilename;
     private string $b64FileContent;
 
-    public function __construct(string $b64SourceString, ?string $customFilename = '')
+    public function __construct(?string $b64SourceString = '',
+                                ?string $hostFilename = '',
+                                ?string $customFilename = '')
     {
-        if ( $this->extractPropertiesFromB64String($b64SourceString) ) {
-            if ($customFilename !== '') $this->customFilename = $customFilename;
-            else $this->customFilename = $this->hostFilename;
+        if ($hostFilename !== '') $this->hostFilename = $hostFilename;
+        if ( $this->extractPropertiesFromB64String($b64SourceString, $hostFilename) ) {
+            $this->customFilename = ($customFilename !== '') ? $customFilename : $this->hostFilename;
         }
         $this->extractPropertiesFromEnvironment();
     }
 
-    private function extractPropertiesFromB64String(string $b64SourceString): bool
+    private function extractPropertiesFromB64String(string $b64SourceString, ?string $hostFilename = ''): bool
     {
-        try{
+        try {
             $b64Parts = explode(',', $b64SourceString);
             $this->b64FileContent = $b64Parts[count($b64Parts)-1];
             $fileExtension = explode(';',
                     explode('/', $b64Parts[0])[1]
                 )[0];
-            $this->hostFilename = Uuid::uuid4()->toString() . '.' . $fileExtension;
+            $this->hostFilename = ($hostFilename !== '') ? $hostFilename :
+                                   $this->generateUniqueFilename($fileExtension);
             return true;
         } catch (\Throwable $th) {
             error_log($th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
             return false;
         }
+    }
+
+    private function generateUniqueFilename(string $fileExtension): ?string
+    {
+        return Uuid::uuid4()->toString() . '.' . $fileExtension;
     }
 
     public function extractPropertiesFromEnvironment(): bool
@@ -87,6 +95,19 @@ class FileUploaded
                                 base64_decode( $this->b64FileContent() )
             );
             return true;
+        } catch(\Throwable $th) {
+            error_log($th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
+            return false;
+        }
+    }
+
+    public function delete(?string $rootPath = ''): bool
+    {
+        try{
+            if ($rootPath === '') $rootPath =  __DIR__;
+            $realFilePath = realpath($rootPath . $this->getFullFilePath());
+            if ($realFilePath && is_writable($realFilePath))
+                return unlink($realFilePath);
         } catch(\Throwable $th) {
             error_log($th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
             return false;

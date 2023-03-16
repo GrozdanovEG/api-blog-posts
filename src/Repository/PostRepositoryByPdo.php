@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Repository;
 
-use BlogPostsHandling\Api\Entity\{Post,Category};
+use BlogPostsHandling\Api\Entity\{FileUploaded, Post, Category};
 
 class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInterface
 {
@@ -50,15 +50,6 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
     /**
      * @inheritDoc
      */
-    public function fetchAll(): array
-    {
-        // TODO: Implement fetchAll() method.
-        return [];
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function findById(string $pid): Post|false
     {
         $query =<<<QUERY
@@ -87,6 +78,14 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
 
     public function deleteById(string $pid): bool
     {
+        try {
+            $thumbnailFileName = $this->findById($pid)->thumbnail();
+            $thumbnail = new FileUploaded('',$thumbnailFileName);
+            $thumbnail->delete(__DIR__.'/../../public/');
+        } catch(\Throwable $th) {
+            error_log('A problem with the thumbnail file deletion occurred:: ' . $th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
+        }
+
         $query = 'DELETE FROM posts_categories WHERE id_post = :id; DELETE FROM posts WHERE id = :id';
         $statement = $this->pdo->prepare($query);
         $parameters = ['id' => $pid];

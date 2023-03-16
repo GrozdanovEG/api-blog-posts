@@ -97,14 +97,14 @@ class Post
 
     public function toMap(): array
     {
-        $thnl = $this->thumbnail();
+        $tbnl = $this->thumbnail();
 
         return [
             'id' => $this->id(),
             'title' => $this->title(),
             'slug' => $this->slug(),
             'content' => $this->content(),
-            'thumbnail' => ( ($thnl instanceof FileUploaded) ? $thnl->toMapShort() : '' ),
+            'thumbnail' => ( ($tbnl instanceof FileUploaded) ? $tbnl->toMapShort() : '' ),
             'author' => $this->author(),
             'postedAt' => $this->postedAt()->format('Y-m-d H:i:s'),
             'categories' => array_map(

@@ -18,8 +18,8 @@ class UpdatePostController
 
         // @todo moving the validation logic to a separated class/layer
         $validRequest = count($inputs) > 0;
-        foreach (['id', 'title', 'author', 'content', 'slug'] as $key)
-            if ( !isset($inputs[$key]) || $inputs[$key] === '') $validRequest = false;
+        //foreach (['id', 'title', 'author', 'content', 'slug'] as $key)
+          //  if ( !isset($inputs[$key]) || $inputs[$key] === '') $validRequest = false;
 
 
         if(!$validRequest) return $responseHandler
