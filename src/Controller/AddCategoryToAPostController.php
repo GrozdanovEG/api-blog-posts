@@ -1,31 +1,50 @@
 <?php
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
-use BlogPostsHandling\Api\Repository\PostsCategoriesRepositoryByPdo;
-use BlogPostsHandling\Api\Response\ResponseHandler;
+
+use DI\NotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use BlogPostsHandling\Api\Repository\CategoryRepositoryByPdo;
-use BlogPostsHandling\Api\Repository\PostRepositoryByPdo;
+use BlogPostsHandling\Api\Repository\{CategoryRepositoryByPdo,PostRepositoryByPdo};
+use BlogPostsHandling\Api\Repository\PostsCategoriesRepositoryByPdo;
+use BlogPostsHandling\Api\Response\ResponseHandler;
+use BlogPostsHandling\Api\Validator\PostCategoryInputValidator;
+use BlogPostsHandling\Api\Validator\InvalidInputsException;
 
 class AddCategoryToAPostController
 {
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $inputs = json_decode($request->getBody()->getContents(), true);
-        $postId = $args['pid'] ?? $inputs['pid'] ?? null;
-        $categoryId = $args['cid'] ?? $inputs['cid'] ?? null;
+        $inputs['pid'] = $args['pid'] ?? $inputs['pid'] ?? null;
+        $inputs['cid'] = $args['cid'] ?? $inputs['cid'] ?? null;
 
         $responseHandler = new ResponseHandler();
+        $categoryRepository = new CategoryRepositoryByPdo();
+        $postRepository = new PostRepositoryByPdo();
 
-        $validRequest = isset($postId) && isset($categoryId);
+        try {
+            $postCategoryInputValidator = new PostCategoryInputValidator($inputs);
+            $postCategoryInputValidator->minimalValidation()->sendResult();
 
-        if ($validRequest) {
-            $category = (new CategoryRepositoryByPdo)->findById($categoryId);
-            $post = (new PostRepositoryByPdo)->findById($postId);
+            $category = $categoryRepository->findById($inputs['cid']);
+            $post = $postRepository->findById($inputs['pid']);
+        }  catch (InvalidInputsException $iie) {
+            return $responseHandler
+                ->type('/v1/errors/wrong_input_data')
+                ->title('wrong_input_data')
+                ->status(400)
+                ->detail('no sufficient or invalid input data provided')
+                ->jsonSend($iie->getErrorMessages());
+        } catch (NotFoundException $nfe) {
+            return $responseHandler
+                ->type('/v1/errors/post_slug_not_found')
+                ->title('invalid_post_slug')
+                ->status(404)
+                ->detail($nfe->getMessage() . 'Nothing to be retrieved. ')
+                ->jsonSend();
         }
 
-        // simple validation @todo to be moved
         $details = [];
         if ($category === false) $details[] = 'No such category found. Nothing to be added.';
         if ($post === false) $details[] = 'No such post found. Nothing to be added.';

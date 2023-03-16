@@ -27,12 +27,12 @@ class PostInputValidator extends InputValidator
     {
         foreach (['id', 'title', 'slug', 'content', 'thumbnail', 'author'] as $key) {
             if ( !isset($this->inputFields[$key]) || $this->inputFields[$key] === '') {
-                $this->errorMessages[] = 'Invalid {' . $key . '} input provided! ';
+                $this->errorMessages[] = 'Invalid post {' . $key . '} input provided! ';
             }
         }
         $postedAtInput = $this->inputFields['posted_at'] ?? $this->inputFields['postedAt'] ?? null;
         if ($postedAtInput === null) {
-            $this->errorMessages[] = 'Invalid { postedAt } input provided! ';
+            $this->errorMessages[] = 'Invalid post { postedAt } input provided! ';
         }
         return $this;
     }
@@ -40,15 +40,15 @@ class PostInputValidator extends InputValidator
     public function slugValidation(): self
     {
         if ( !isset($this->inputFields['slug']) || $this->inputFields['slug'] === '')
-            $this->errorMessages[] = 'Invalid { slug } input provided! ';
+            $this->errorMessages[] = 'Invalid post { slug } input provided! ';
 
         return $this;
     }
 
     private function validateId(): void
     {
-        if ( !isset($this->inputFields['id']) || $this->inputFields['id'] === '')
-            $this->errorMessages[] = 'Invalid { id } input provided! ';
+        if ( !isset($this->inputFields['id']) || ($this->inputFields['id'] === '') )
+            $this->errorMessages[] = 'Invalid post { id } input provided! ';
     }
 
     /** @var Post $post */
@@ -63,12 +63,4 @@ class PostInputValidator extends InputValidator
         return $this;
     }
 
-    /** @throws InvalidInputsException */
-    public function sendResult(): bool
-    {
-        if (count($this->errorMessages) > 0)
-            throw new InvalidInputsException($this->errorMessages);
-
-        return true;
-    }
 }

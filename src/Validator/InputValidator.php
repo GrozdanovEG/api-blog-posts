@@ -15,4 +15,13 @@ class InputValidator
         $this->inputFields = $inputFields;
     }
 
+    /** @throws InvalidInputsException */
+    public function sendResult(): bool
+    {
+        if (count($this->errorMessages) > 0)
+            throw new InvalidInputsException($this->errorMessages);
+
+        return true;
+    }
+
 }
