@@ -49,14 +49,14 @@ class UpdateCategoryController
         $category = Category::createFromArrayAssoc($categoryInputValidator->validatedFields());
 
         try {
-            if ($categoryRepository->store($category)) {
+            $categoryRepository->store($category);
                 return $responseHandler
                 ->type('/v1/category_updated')
                 ->title('category_updated')
                 ->status(200)
                 ->detail('category [' . $category->name() . '] successfully updated with the following data')
                 ->jsonSend(["category" => $category->toMap()]);
-            }
+
         } catch (\Throwable $th) {
             error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
             return $responseHandler

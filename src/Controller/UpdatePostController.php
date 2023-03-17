@@ -46,14 +46,14 @@ class UpdatePostController
 
         try {
             $post = Post::createFromArrayAssoc($postInputValidator->validatedFields());
-            if ($postRepository->store($post)) {
+            $postRepository->store($post);
                 return $responseHandler
                 ->type('/v1/post_updated')
                 ->title('post_updated')
                 ->status(200)
                 ->detail('post [' . $post->title() . '] successfully updated with the following data')
                 ->jsonSend(["post" => $post->toMap()]);
-            }
+
         } catch (\Throwable $th) {
             error_log('Error occurred -> '
                 . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);

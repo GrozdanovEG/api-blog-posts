@@ -54,7 +54,7 @@ class PostInputValidator extends InputValidator
         }
     }
 
-    /** @var Post $post */
+    /** @param Post $post */
     public function populateWithObjectData(Post $post): self
     {
         foreach (['id', 'title', 'slug', 'content', 'thumbnail', 'author', 'postedAt'] as $key) {

@@ -50,7 +50,8 @@ class AddPostController
                 ->status(201)
                 ->detail('post [' . $post->title() . '] successfully added')
                 ->jsonSend(["post" => $post->toMap()]);
-            }
+            } else
+                throw new \Error('post/thumbnail object cannot be stored');
         } catch (\Throwable $th) {
             error_log('Error occurred -> ' .
                 "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);

@@ -15,9 +15,8 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
     public function store(Category $category): Category|false
     {
         try {
-            if ($this->findById($category->id())) {
+                $this->findById($category->id());
                 $query = 'UPDATE categories SET name = :name, description = :description WHERE id = :id';
-            }
         } catch (NotFoundException $nfe) {
             $query = 'INSERT INTO categories (id, name, description) VALUES (:id, :name, :description);';
         }
@@ -46,7 +45,7 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
 
         if ($statement = $this->pdo->query($query)) {
             $results = $statement->fetchAll();
-            if ($results && count($results) > 0) {
+            if ($results) {
                 foreach ($results as $rec) {
                     $recordsFound[] = Category::createFromArrayAssoc($rec);
                 }

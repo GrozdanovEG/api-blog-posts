@@ -24,7 +24,7 @@ class FileUploaded
         }
         if (
             $b64SourceString !== '' &&
-            $this->extractPropertiesFromB64String($b64SourceString, $hostFilename)
+            $this->extractPropertiesFromB64String($b64SourceString)
         ) {
             $this->customFilename = ($customFilename !== '') ? $customFilename : $this->hostFilename;
         }
@@ -90,8 +90,8 @@ class FileUploaded
             }
         } catch (\Throwable $th) {
             error_log($th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
-            return false;
         }
+        return false;
     }
 
     public function toMapShort(): array
@@ -136,19 +136,13 @@ class FileUploaded
         }
     }
 
-    private function extractPropertiesFromEnvironment(): bool
+    private function extractPropertiesFromEnvironment(): void
     {
-        try {
-            $this->hostUploadFolderPath = $_ENV['HOST_THUMBNAILS_PATH'];
-            $this->hostRootUri = $_ENV['HOST_ROOT_URI'] ?? 'http://' . $_SERVER['HTTP_HOST'];
-            return true;
-        } catch (\Throwable $th) {
-            error_log($th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
-        }
-        return false;
+        $this->hostUploadFolderPath = $_ENV['HOST_THUMBNAILS_PATH'];
+        $this->hostRootUri = $_ENV['HOST_ROOT_URI'] ?? 'http://' . $_SERVER['HTTP_HOST'];
     }
 
-    private function generateUniqueFilename(string $fileExtension): ?string
+    private function generateUniqueFilename(string $fileExtension): string
     {
         return Uuid::uuid4()->toString() . '.' . $fileExtension;
     }

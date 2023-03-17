@@ -8,14 +8,14 @@ use BlogPostsHandling\Api\Entity\Category;
 
 interface CategoryRepositoryInterface
 {
-    /** @var Category $category
+    /** @param Category $category
       * @return Category|false      */
     public function store(Category $category): Category|false;
 
     /** @return Category[] */
     public function fetchAll(): array;
 
-    /** @var string $cid
+    /** @param string $cid
       * @return Category */
     public function findById(string $cid): Category;
 }

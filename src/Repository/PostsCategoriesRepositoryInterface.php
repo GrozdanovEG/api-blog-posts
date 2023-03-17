@@ -8,8 +8,8 @@ use BlogPostsHandling\Api\Entity\{Category,Post};
 
 interface PostsCategoriesRepositoryInterface
 {
-    /** @var Post $post
-     *  @var Category $category
+    /** @param Post $post
+     *  @param Category $category
      *  @return bool
      */
     public function store(Post $post, Category $category): bool;

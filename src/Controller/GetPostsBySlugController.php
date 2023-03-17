@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BlogPostsHandling\Api\Controller;
 
+use _PHPStan_e0e4f009c\Nette\Neon\Exception;
 use DI\NotFoundException;
 use BlogPostsHandling\Api\Entity\Post;
 use BlogPostsHandling\Api\Repository\PostRepositoryByPdo;
@@ -53,7 +54,8 @@ class GetPostsBySlugController
                     ->status(200)
                     ->detail('post [' . $post->title() . '] with slug [' . $post->slug() . '] was successfully found')
                     ->jsonSend(["post" => $post->toMap()]);
-            }
+            } else
+                throw new \Error('Valid post object cannot be returned ');
         } catch (\Throwable $th) {
             error_log('Error occurred -> '
                 . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);

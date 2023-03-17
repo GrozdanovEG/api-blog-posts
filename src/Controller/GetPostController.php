@@ -49,7 +49,8 @@ class GetPostController
                     ->status(200)
                     ->detail('post [' . $post->title() . '] was successfully found')
                     ->jsonSend(["post" => $post->toMap()]);
-            }
+            } else
+                throw new \Error('Valid post object cannot be returned ');
         } catch (\Throwable $th) {
             error_log('Error occurred -> '
                 . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);

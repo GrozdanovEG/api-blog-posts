@@ -42,7 +42,8 @@ class AddCategoryController
                     ->status(201)
                     ->detail('category [' . $category->name() . '] successfully added')
                     ->jsonSend([$category->toMap()]);
-            }
+            } else
+                throw new \Error('category object cannot be stored');
         } catch (\Throwable $th) {
             error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
             return $responseHandler

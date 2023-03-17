@@ -43,7 +43,7 @@ class CategoryInputValidator extends InputValidator
         }
     }
 
-    /** @var Category $category */
+    /** @param Category $category */
     public function populateWithObjectData(Category $category): self
     {
         foreach (['id', 'name', 'description'] as $key) {

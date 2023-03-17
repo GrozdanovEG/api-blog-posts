@@ -50,7 +50,8 @@ class DeleteCategoryController
                     ->status(200)
                     ->detail('category [' . $category->name() . '] was successfully deleted')
                     ->jsonSend([$category->toMap()]);
-            }
+            } else
+                throw new \Error('No valid category object to be deleted ');
         } catch (\Throwable $th) {
             error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
             return $responseHandler

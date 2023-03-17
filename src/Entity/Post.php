@@ -89,7 +89,7 @@ class Post
         return $this->postedAt;
     }
 
-    /** @var Category $category
+    /** @param Category $category
      *  @return Post  */
     public function addCategory(Category $category): self
     {

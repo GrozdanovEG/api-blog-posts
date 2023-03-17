@@ -8,15 +8,15 @@ use BlogPostsHandling\Api\Entity\Post;
 
 interface PostRepositoryInterface
 {
-    /** @var Post $post
+    /** @param Post $post
       * @return Post|false */
     public function store(Post $post): Post|false;
 
-    /** @var string $pid
+    /** @param string $pid
       * @return Post|false */
     public function findById(string $pid): Post|false;
 
-    /** @var string $slug
+    /** @param string $slug
      * @return Post|false */
     public function findBySlug(string $slug): Post|false;
 }
