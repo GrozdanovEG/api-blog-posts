@@ -2,6 +2,8 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Validator;
 
+use BlogPostsHandling\Api\Entity\Category;
+
 class CategoryInputValidator extends InputValidator
 {
     public function minimalValidation(): self
@@ -38,7 +40,8 @@ class CategoryInputValidator extends InputValidator
     public function populateWithObjectData(Category $category): self
     {
         foreach (['id', 'name', 'description'] as $key)
-            if (!isset($this->inputFields[$key]) ) $this->inputFields[$key] = $category->{$key}();
+            if (!isset($this->inputFields[$key]) ) $this->validatedFields[$key] = $category->{$key}();
+            else $this->validatedFields[$key] = $this->inputFields[$key];
 
         return $this;
     }

@@ -16,18 +16,15 @@ class GetPostController
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $inputs = json_decode($request->getBody()->getContents(), true);
-        $inputs['id'] = $args['id'] ?? $inputs['id'] ?? null;
+        $inputs['id'] = $args['id'] ?? $inputs['id'];
         $responseHandler = new ResponseHandler();
         $postRepository = new PostRepositoryByPdo();
 
-        $validRequest = isset($inputs['id']);
-        $post = null;
-
-        if ($validRequest)
         try {
             $postInputValidator = new PostInputValidator($inputs);
             $postInputValidator->minimalValidation()->sendResult();
             $post = $postRepository->findById( $inputs['id'] );
+
         } catch (NotFoundException $nfe) {
             return $responseHandler
                 ->type('/v1/errors/post_id_not_found')

@@ -70,6 +70,9 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
 
         if( $stmt->execute($parameters) && $rows = $stmt->fetchAll() )
             if (count($rows) > 0 ) {
+                if (isset($rows[0]['thumbnail']) && $rows[0]['thumbnail'] !== '')
+                $rows[0]['thumbnail'] = new FileUploaded('', $rows[0]['thumbnail'] );
+
                 $post = Post::createFromArrayAssoc($rows[0]);
                 foreach ( $rows as $r ) {
                     if ($r['cid'] && $r['name'])
@@ -85,8 +88,7 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
     public function deleteById(string $pid): bool
     {
         try {
-            $thumbnailFileName = $this->findById($pid)->thumbnail();
-            $thumbnail = new FileUploaded('',$thumbnailFileName);
+            $thumbnail = $this->findById($pid)->thumbnail();
             $thumbnail->delete(__DIR__.'/../../public/');
         } catch(\Throwable $th) {
             error_log('A problem with the thumbnail file deletion occurred:: ' .

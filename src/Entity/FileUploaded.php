@@ -25,7 +25,7 @@ class FileUploaded
         $this->extractPropertiesFromEnvironment();
     }
 
-    private function extractPropertiesFromB64String(string $b64SourceString, ?string $hostFilename = ''): bool
+    private function extractPropertiesFromB64String(string $b64SourceString): bool
     {
         try {
             $b64Parts = explode(',', $b64SourceString);
@@ -33,8 +33,7 @@ class FileUploaded
             $fileExtension = explode(';',
                     explode('/', $b64Parts[0])[1]
                 )[0];
-            $this->hostFilename = ($hostFilename !== '') ? $hostFilename :
-                                   $this->generateUniqueFilename($fileExtension);
+            $this->hostFilename = $this->generateUniqueFilename($fileExtension);
             return true;
         } catch (\Throwable $th) {
             error_log($th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
@@ -51,7 +50,7 @@ class FileUploaded
     {
         try {
             $this->hostUploadFolderPath = $_ENV['HOST_THUMBNAILS_PATH'];
-            $this->hostRootUri = $_ENV['HOST_ROOT_URI'] ?? $_SERVER['HTTP_HOST'];
+            $this->hostRootUri = $_ENV['HOST_ROOT_URI'] ?? 'http://'. $_SERVER['HTTP_HOST'];
             return true;
         } catch (\Throwable $th) {
             error_log($th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());

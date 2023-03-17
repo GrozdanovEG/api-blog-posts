@@ -6,7 +6,6 @@ use DateTimeImmutable;
 use Ramsey\Uuid\Uuid;
 use Cocur\Slugify\Slugify;
 
-
 class Post 
 {
     private string $id;
@@ -14,12 +13,12 @@ class Post
     private string $slug;
     private string $content;
     private string $author;
-    private FileUploaded|string $thumbnail;
+    private ?FileUploaded $thumbnail;
     private ?DateTimeImmutable $postedAt;
     private array $categories = [];
 
     public function __construct(string $id, string $title, string $slug, string $content,
-                                string $author, FileUploaded|string $thumbnail = '', ?DateTimeImmutable $postedAt = null)
+                                string $author, ?FileUploaded $thumbnail = null, ?DateTimeImmutable $postedAt = null)
     {
         $this->id = $id;
         $this->title = $title;
@@ -42,7 +41,7 @@ class Post
             ($array['slug'] ?? (new Slugify(['separator' => '-']))->slugify($array['title'])),
             ($array['content'] ?? 'no content provided'),
             ($array['author'] ?? 'no author provided'),
-            ($array['thumbnail'] ?? ''),
+            ($array['thumbnail'] ?? null),
             ($postedAt)
         );
     }
@@ -67,7 +66,7 @@ class Post
         return $this->content;
     }
 
-    public function thumbnail(): FileUploaded|string
+    public function thumbnail(): ?FileUploaded
     {
         return $this->thumbnail;
     }
@@ -112,5 +111,16 @@ class Post
                 $this->categories()
             )
         ];
+    }
+
+    public function toMapShort(): array
+    {
+        return [
+            'id' => $this->id(),
+            'title' => $this->title(),
+            'author' => $this->author(),
+            'postedAt' => $this->postedAt()->format('Y-m-d H:i:s')
+            ];
+
     }
 }

@@ -40,15 +40,15 @@ class DeletePostController
                 ->jsonSend($iie->getErrorMessages());
         }
 
+        //echo '<pre>'; var_dump($post->toMap()); exit;
         if (($post instanceof Post) &&
              $postRepository->deleteById($post->id()) )
             return $responseHandler
                 ->type('/v1/post_deleted')
-                ->title('Post deleted')
+                ->title('post_deleted')
                 ->status(200)
                 ->detail('post ['.$post->title().'] was successfully deleted')
-                ->jsonSend(["post" => $post->toMap()]);
-
+                ->jsonSend(["post" => $post->toMapShort()]);
 
         return $responseHandler
             ->type('/v1/errors/post_deletion_failure')

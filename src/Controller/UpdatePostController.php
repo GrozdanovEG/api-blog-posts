@@ -20,16 +20,14 @@ class UpdatePostController
         $responseHandler = new ResponseHandler();
         $postRepository = new PostRepositoryByPdo();
 
-        $validRequest = isset($inputs['id']);
-
-        if ($validRequest)
         try {
             $postFromRepository = $postRepository->findById( $inputs['id'] );
             $postInputValidator = new PostInputValidator($inputs);
             $postInputValidator
                 ->populateWithObjectData($postFromRepository)
-                ->fullValidation()
+                ->minimalValidation()
                 ->sendResult();
+
         } catch (NotFoundException $nfe) {
             return $responseHandler
                 ->type('/v1/errors/post_id_not_found')
@@ -37,6 +35,7 @@ class UpdatePostController
                 ->status(404)
                 ->detail($nfe->getMessage() . 'Nothing to be updated. ')
                 ->jsonSend();
+
         } catch (InvalidInputsException $iie) {
             return $responseHandler
                 ->type('/v1/errors/wrong_input_data')
@@ -46,7 +45,7 @@ class UpdatePostController
                 ->jsonSend($iie->getErrorMessages());
         }
 
-        $post = Post::createFromArrayAssoc($inputs);
+        $post = Post::createFromArrayAssoc($postInputValidator->validatedFields());
 
         if ( $postRepository->store($post) )
             return $responseHandler

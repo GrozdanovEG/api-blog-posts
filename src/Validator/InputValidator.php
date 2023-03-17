@@ -10,6 +10,9 @@ class InputValidator
     /** @var string[]  */
     protected array $inputFields;
 
+    /** @var string[]  */
+    protected array $validatedFields = [];
+
     public function __construct(array $inputFields)
     {
         $this->inputFields = $inputFields;
@@ -22,6 +25,12 @@ class InputValidator
             throw new InvalidInputsException($this->errorMessages);
 
         return true;
+    }
+
+    /** @return  string[] */
+    public function validatedFields(): array
+    {
+        return $this->validatedFields;
     }
 
 }

@@ -30,8 +30,8 @@ class ListCategoriesController
             return $responseHandler
                 ->type('/v1/categories_unavailable')
                 ->title('categories_unavailable')
-                ->status(404)
-                ->detail('categories not available')
+                ->status(500)
+                ->detail('Categories cannot be retrieved due to a server error')
                 ->jsonSend();
         }
 

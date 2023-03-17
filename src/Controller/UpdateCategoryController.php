@@ -3,6 +3,9 @@ declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
 
 use BlogPostsHandling\Api\Response\ResponseHandler;
+use BlogPostsHandling\Api\Validator\CategoryInputValidator;
+use BlogPostsHandling\Api\Validator\InvalidInputsException;
+use DI\NotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use BlogPostsHandling\Api\Entity\Category;
@@ -16,25 +19,38 @@ class UpdateCategoryController
         $inputs['id'] = $args['id'] ?? $inputs['id'];
 
         $responseHandler = new ResponseHandler();
+        $categoryRepository = new CategoryRepositoryByPdo();
 
-        // @todo moving the validation logic to a separated class/layer
-        $validRequest = count($inputs) > 0;
-        foreach (['id', 'name', 'description'] as $key)
-            if ( !isset($inputs[$key]) || $inputs[$key] === '') $validRequest = false;
+        try {
+            $categoryInputValidator = new CategoryInputValidator($inputs);
+            $categoryFromRepository = $categoryRepository->findById($inputs['id']);
+            $categoryInputValidator
+                ->populateWithObjectData($categoryFromRepository)
+                ->minimalValidation()
+                ->sendResult();
 
-        if(!$validRequest)
+        } catch (InvalidInputsException $iie) {
             return $responseHandler
                 ->type('/v1/errors/wrong_input_data')
-                ->title('category_update_failure')
+                ->title('wrong_input_data')
                 ->status(400)
-                ->detail('the category ['.$inputs['id'].'] was not updated, no sufficient input data provided')
+                ->detail('A new category cannot be added, no sufficient or invalid input data provided')
+                ->jsonSend($iie->getErrorMessages());
+
+        }  catch (NotFoundException $nfe) {
+            error_log($nfe->getMessage() . PHP_EOL);
+            return $responseHandler
+                ->type('/v1/errors/category_not_found')
+                ->title('category_not_found')
+                ->status(404)
+                ->detail('A category with id ['. $inputs['id'] .'] was not found, nothing to be retrieved')
                 ->jsonSend();
+        }
 
+        $category = Category::createFromArrayAssoc($categoryInputValidator->validatedFields());
 
-        $category = Category::createFromArrayAssoc($inputs);
-        $categoryRepo = new CategoryRepositoryByPdo();
-
-        if ( $categoryRepo->store($category) )
+        try {
+            if ($categoryRepository->store($category))
             return $responseHandler
                 ->type('/v1/category_updated')
                 ->title('category_updated')
@@ -42,12 +58,17 @@ class UpdateCategoryController
                 ->detail('category ['.$category->name().'] successfully updated with the following data')
                 ->jsonSend(["category" => $category->toMap()]);
 
-        else return $responseHandler
+        }
+
+        catch (\Throwable $th) {
+            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}".PHP_EOL);
+            return $responseHandler
                 ->type('/v1/errors/category_update_failure')
                 ->title('category_storing_failure')
                 ->status(500)
                 ->detail('the category ['.$inputs['id'].'] was not updated due to a server error')
                 ->jsonSend();
+        }
 
     }
 }

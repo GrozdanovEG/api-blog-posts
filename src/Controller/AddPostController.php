@@ -21,6 +21,10 @@ class AddPostController
         $postRepository = new PostRepositoryByPdo();
 
         try {
+            if (isset($inputs['thumbnail'])) {
+                $thumbnail = new FileUploaded($inputs['thumbnail']);
+                $inputs['thumbnail'] = $thumbnail;
+            }
             $postInputValidator = new PostInputValidator($inputs);
             $postInputValidator
                 ->defaultValidation()
@@ -34,11 +38,7 @@ class AddPostController
                 ->jsonSend($iie->getErrorMessages());
         }
 
-        if (isset($inputs['thumbnail'])) {
-            $thumbnail = new FileUploaded($inputs['thumbnail']);
-            $inputs['thumbnail'] = $thumbnail;
-        }
-
+        //echo '<pre>'; var_dump($inputs); exit;
         $post = Post::createFromArrayAssoc($inputs);
 
         if ( $postRepository->store($post)  &&

@@ -55,10 +55,10 @@ class PostInputValidator extends InputValidator
     public function populateWithObjectData(Post $post): self
     {
         foreach (['id', 'title', 'slug', 'content', 'thumbnail', 'author', 'postedAt'] as $key)
-        if (!isset($this->inputFields[$key]) ) $this->inputFields[$key] = $post->{$key}();
+        if (!isset($this->inputFields[$key]) ) $this->validatedFields[$key] = $post->{$key}();
 
         $postedAtInput = $this->inputFields['posted_at'] ?? $this->inputFields['postedAt'] ?? null;
-        if ($postedAtInput === null) $this->inputFields['postedAt'] = $post->postedAt();
+        if ($postedAtInput === null) $this->validatedFields['postedAt'] = $post->postedAt();
 
         return $this;
     }
