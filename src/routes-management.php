@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use BlogPostsHandling\Api\Controller\HomeController;
@@ -35,4 +36,3 @@ $app->post('/v1/post/{pid}/addto/{cid}', AddCategoryToAPostController::class);
 
 $app->get('/v1/apidocs', OpenApiDocController::class);
 /* Application routes ends */
-

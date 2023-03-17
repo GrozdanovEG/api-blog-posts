@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Entity;
 
 use Ramsey\Uuid\Uuid;
@@ -15,7 +17,6 @@ class Category
         $this->id = $id;
         $this->name = $name;
         $this->description = $description;
-
     }
 
     public static function createFromArrayAssoc(array $array): self
@@ -28,12 +29,12 @@ class Category
     }
 
     public function id(): string
-    { 
+    {
         return $this->id;
     }
 
     public function name(): string
-    { 
+    {
         return $this->name;
     }
 
@@ -44,7 +45,7 @@ class Category
 
     public function __toString(): string
     {
-        return '['.$this->id().': ['.$this->name().': '.$this->description().']]';
+        return '[' . $this->id() . ': [' . $this->name() . ': ' . $this->description() . ']]';
     }
 
     public function toMap(): array
@@ -57,5 +58,4 @@ class Category
     {
         return ['id' => $this->id, 'name' => $this->name];
     }
-
 }

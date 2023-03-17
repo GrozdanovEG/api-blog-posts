@@ -1,6 +1,9 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Documentation;
+
 use OpenApi\Annotations as OA;
 
 /**
@@ -17,5 +20,4 @@ class ApiDocs
     /**
      * @
      */
-
 }

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Repository;
 
 use DI\Container;
@@ -11,8 +13,9 @@ abstract class AbstractRepository
 
     public function container(): Container
     {
-        if (!isset($this->container)) $this->container = (new ContainerFactory)();
+        if (!isset($this->container)) {
+            $this->container = (new ContainerFactory())();
+        }
         return $this->container;
     }
-
 }

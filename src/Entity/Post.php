@@ -1,12 +1,14 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Entity;
 
 use DateTimeImmutable;
 use Ramsey\Uuid\Uuid;
 use Cocur\Slugify\Slugify;
 
-class Post 
+class Post
 {
     private string $id;
     private string $title;
@@ -17,9 +19,15 @@ class Post
     private ?DateTimeImmutable $postedAt;
     private array $categories = [];
 
-    public function __construct(string $id, string $title, string $slug, string $content,
-                                string $author, ?FileUploaded $thumbnail = null, ?DateTimeImmutable $postedAt = null)
-    {
+    public function __construct(
+        string $id,
+        string $title,
+        string $slug,
+        string $content,
+        string $author,
+        ?FileUploaded $thumbnail = null,
+        ?DateTimeImmutable $postedAt = null
+    ) {
         $this->id = $id;
         $this->title = $title;
         $this->slug = $slug;
@@ -47,7 +55,7 @@ class Post
     }
 
     public function id(): string
-    { 
+    {
         return $this->id;
     }
 
@@ -72,7 +80,7 @@ class Post
     }
 
     public function author(): string
-    { 
+    {
         return $this->author;
     }
 
@@ -108,7 +116,9 @@ class Post
             'author' => $this->author(),
             'postedAt' => $this->postedAt()->format('Y-m-d H:i:s'),
             'categories' => array_map(
-                function($c) { return $c->toMapShort();},
+                function ($c) {
+                    return $c->toMapShort();
+                },
                 $this->categories()
             )
         ];

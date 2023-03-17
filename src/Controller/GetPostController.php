@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Controller;
 
 use DI\NotFoundException;
@@ -23,7 +25,6 @@ class GetPostController
             $postInputValidator = new PostInputValidator($inputs);
             $postInputValidator->minimalValidation()->sendResult();
             $post = $postRepository->findById($inputs['id']);
-
         } catch (InvalidInputsException $iie) {
             return $responseHandler
                 ->type('/v1/errors/wrong_input_data')
@@ -31,7 +32,6 @@ class GetPostController
                 ->status(400)
                 ->detail('the post [' . $inputs['id'] . '] was not retrieved, no sufficient or invalid input data provided')
                 ->jsonSend($iie->getErrorMessages());
-
         } catch (NotFoundException $nfe) {
             return $responseHandler
                 ->type('/v1/errors/post_id_not_found')
@@ -42,13 +42,14 @@ class GetPostController
         }
 
         try {
-            if ( $post instanceof Post)
+            if ($post instanceof Post) {
                 return $responseHandler
                     ->type('/v1/resource_found')
                     ->title('post_found')
                     ->status(200)
-                    ->detail('post ['.$post->title().'] was successfully found')
+                    ->detail('post [' . $post->title() . '] was successfully found')
                     ->jsonSend(["post" => $post->toMap()]);
+            }
         } catch (\Throwable $th) {
             error_log('Error occurred -> '
                 . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
@@ -56,7 +57,7 @@ class GetPostController
                 ->type('/v1/errors/post_cannot_be_fetched')
                 ->title('post_cannot_be_fetched')
                 ->status(500)
-                ->detail('A post with id ['. $inputs['id'] .'] not found for unknown reason, nothing to be retrieved')
+                ->detail('A post with id [' . $inputs['id'] . '] not found for unknown reason, nothing to be retrieved')
                 ->jsonSend();
         }
     }

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Controller;
 
 use DI\NotFoundException;
@@ -27,15 +29,13 @@ class AddCategoryToAPostController
             $postCategoryInputValidator->minimalValidation()->sendResult();
             $category = $categoryRepository->findById($inputs['cid']);
             $post = $postRepository->findById($inputs['pid']);
-
-        }  catch (InvalidInputsException $iie) {
+        } catch (InvalidInputsException $iie) {
             return $responseHandler
                 ->type('/v1/errors/wrong_input_data')
                 ->title('wrong_input_data')
                 ->status(400)
                 ->detail('no sufficient or invalid input data provided')
                 ->jsonSend($iie->getErrorMessages());
-
         } catch (NotFoundException $nfe) {
             return $responseHandler
                 ->type('/v1/errors/post_slug_not_found')
@@ -47,16 +47,16 @@ class AddCategoryToAPostController
 
         $validRequest = bool($post && $category);
         try {
-            if ( $validRequest && (new PostsCategoriesRepositoryByPdo)->store($post, $category) ) {
+            if ($validRequest && (new PostsCategoriesRepositoryByPdo())->store($post, $category)) {
                 return $responseHandler
                     ->type('/v1/category_added_to_a_post')
                     ->title('adding_category_to_post_success')
                     ->status(200)
-                    ->detail('category {'.$category->name() .'} added to the post {'.$post->title().'}')
+                    ->detail('category {' . $category->name() . '} added to the post {' . $post->title() . '}')
                     ->jsonSend();
             }
         } catch (\Throwable $th) {
-            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}".PHP_EOL);
+            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
             return $responseHandler
                 ->type('/v1/errors/operation_failure')
                 ->title('operation_failure')

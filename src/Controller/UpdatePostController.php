@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Controller;
 
 use DI\NotFoundException;
@@ -20,13 +22,12 @@ class UpdatePostController
         $postRepository = new PostRepositoryByPdo();
 
         try {
-            $postFromRepository = $postRepository->findById( $inputs['id'] );
+            $postFromRepository = $postRepository->findById($inputs['id']);
             $postInputValidator = new PostInputValidator($inputs);
             $postInputValidator
                 ->populateWithObjectData($postFromRepository)
                 ->minimalValidation()
                 ->sendResult();
-
         } catch (NotFoundException $nfe) {
             return $responseHandler
                 ->type('/v1/errors/post_id_not_found')
@@ -34,26 +35,25 @@ class UpdatePostController
                 ->status(404)
                 ->detail($nfe->getMessage() . 'Nothing to be updated. ')
                 ->jsonSend();
-
         } catch (InvalidInputsException $iie) {
             return $responseHandler
                 ->type('/v1/errors/wrong_input_data')
                 ->title('wrong_input_data')
                 ->status(400)
-                ->detail('the post ['.$inputs['id'].'] was not updated, no sufficient or invalid input data provided')
+                ->detail('the post [' . $inputs['id'] . '] was not updated, no sufficient or invalid input data provided')
                 ->jsonSend($iie->getErrorMessages());
         }
 
         try {
-            $post = Post::createFromArrayAssoc( $postInputValidator->validatedFields() );
-            if ( $postRepository->store($post) )
-            return $responseHandler
+            $post = Post::createFromArrayAssoc($postInputValidator->validatedFields());
+            if ($postRepository->store($post)) {
+                return $responseHandler
                 ->type('/v1/post_updated')
                 ->title('post_updated')
                 ->status(200)
-                ->detail('post ['.$post->title().'] successfully updated with the following data')
+                ->detail('post [' . $post->title() . '] successfully updated with the following data')
                 ->jsonSend(["post" => $post->toMap()]);
-
+            }
         } catch (\Throwable $th) {
             error_log('Error occurred -> '
                 . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
@@ -61,7 +61,7 @@ class UpdatePostController
                 ->type('/v1/errors/post_update_failure')
                 ->title('post_update_failure')
                 ->status(500)
-                ->detail('the post id '.$inputs['id'].' was not updated due to a server error')
+                ->detail('the post id ' . $inputs['id'] . ' was not updated due to a server error')
                 ->jsonSend();
         }
     }

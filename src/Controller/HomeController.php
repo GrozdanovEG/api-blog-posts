@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BlogPostsHandling\Api\Controller;
@@ -22,5 +23,4 @@ class HomeController
             ->detail('API home route')
             ->jsonSend($responseData);
     }
-
 }

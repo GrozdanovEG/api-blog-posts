@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Controller;
 
 use BlogPostsHandling\Api\Repository\CategoryRepositoryByPdo;
@@ -15,16 +17,15 @@ class ListCategoriesController
         $responseHandler = new ResponseHandler();
 
         try {
-            $categories = (new CategoryRepositoryByPdo)->fetchAll();
+            $categories = (new CategoryRepositoryByPdo())->fetchAll();
             return $responseHandler
                 ->type('/v1/categories_retrieved')
                 ->title('categories_retrieved')
                 ->status(200)
                 ->detail('categories successfully retrieved')
                 ->jsonSend(["categories" => array_map(fn($c) => $c->toMap(), $categories)]);
-
         } catch (Throwable $th) {
-            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}".PHP_EOL);
+            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
 
             return $responseHandler
                 ->type('/v1/categories_unavailable')
@@ -33,7 +34,5 @@ class ListCategoriesController
                 ->detail('Categories cannot be retrieved due to a server error')
                 ->jsonSend();
         }
-
-
     }
 }

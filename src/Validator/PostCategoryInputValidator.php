@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Validator;
 
 class PostCategoryInputValidator extends InputValidator
@@ -12,10 +14,12 @@ class PostCategoryInputValidator extends InputValidator
 
     private function validateIds(): void
     {
-        if ( !isset($this->inputFields['pid']) || $this->inputFields['pid'] === '')
+        if (!isset($this->inputFields['pid']) || $this->inputFields['pid'] === '') {
             $this->errorMessages[] = 'Invalid post { id } input provided! ';
+        }
 
-        if ( !isset($this->inputFields['cid']) || $this->inputFields['cid'] === '')
+        if (!isset($this->inputFields['cid']) || $this->inputFields['cid'] === '') {
             $this->errorMessages[] = 'Invalid category { id } input provided! ';
+        }
     }
 }

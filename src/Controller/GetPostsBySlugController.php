@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Controller;
 
 use DI\NotFoundException;
@@ -21,36 +23,37 @@ class GetPostsBySlugController
         $postRepository = new PostRepositoryByPdo();
         $post = null;
 
-        if ($inputs['slug'] !== null)
-        try {
-            $postInputValidator = new PostInputValidator($inputs);
-            $postInputValidator->slugValidation()->sendResult();
-            $post = $postRepository->findBySlug( $inputs['slug']  );
-        } catch (NotFoundException $nfe) {
-            return $responseHandler
+        if ($inputs['slug'] !== null) {
+            try {
+                $postInputValidator = new PostInputValidator($inputs);
+                $postInputValidator->slugValidation()->sendResult();
+                $post = $postRepository->findBySlug($inputs['slug']);
+            } catch (NotFoundException $nfe) {
+                return $responseHandler
                 ->type('/v1/errors/post_slug_not_found')
                 ->title('invalid_post_slug')
                 ->status(404)
                 ->detail($nfe->getMessage() . 'Nothing to be retrieved. ')
                 ->jsonSend();
-        } catch (InvalidInputsException $iie) {
-            return $responseHandler
+            } catch (InvalidInputsException $iie) {
+                return $responseHandler
                 ->type('/v1/errors/wrong_input_data')
                 ->title('wrong_input_data')
                 ->status(400)
-                ->detail('the post ['.$inputs['id'].'] was not updated, no sufficient or invalid input data provided')
+                ->detail('the post [' . $inputs['id'] . '] was not updated, no sufficient or invalid input data provided')
                 ->jsonSend($iie->getErrorMessages());
+            }
         }
 
         try {
-            if ( $post instanceof Post)
+            if ($post instanceof Post) {
                 return $responseHandler
                     ->type('/v1/resource_found')
                     ->title('post_found')
                     ->status(200)
-                    ->detail('post ['.$post->title().'] with slug ['. $post->slug() .'] was successfully found')
+                    ->detail('post [' . $post->title() . '] with slug [' . $post->slug() . '] was successfully found')
                     ->jsonSend(["post" => $post->toMap()]);
-
+            }
         } catch (\Throwable $th) {
             error_log('Error occurred -> '
                 . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
@@ -63,4 +66,3 @@ class GetPostsBySlugController
         }
     }
 }
-

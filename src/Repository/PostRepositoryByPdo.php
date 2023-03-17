@@ -1,12 +1,13 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Repository;
 
 use DI\NotFoundException;
 use BlogPostsHandling\Api\Entity\{FileUploaded,Post,Category};
 
-class PostRepositoryByPdo extends RepositoryByPdo
-                          implements PostRepositoryInterface
+class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInterface
 {
     /**
      * @inheritDoc
@@ -15,8 +16,8 @@ class PostRepositoryByPdo extends RepositoryByPdo
     {
         /** @todo To be moved to QueryBuilder */
         try {
-            $this->findById( $post->id() );
-            $query =<<<UPDATEQ
+            $this->findById($post->id());
+            $query = <<<UPDATEQ
                 UPDATE posts SET 
                     title = :title, 
                     slug = :slug,
@@ -27,7 +28,7 @@ class PostRepositoryByPdo extends RepositoryByPdo
                     WHERE id = :id
             UPDATEQ;
         } catch (NotFoundException $nfe) {
-            $query =<<<INSERTQ
+            $query = <<<INSERTQ
             INSERT INTO posts (id, title, slug, content, thumbnail, author, posted_at)
                 VALUES (:id, :title, :slug, :content, :thumbnail, :author, :posted_at);
             INSERTQ;
@@ -43,7 +44,7 @@ class PostRepositoryByPdo extends RepositoryByPdo
             'posted_at' => $post->postedAt()->format('Y-m-d H:i:s')
         ];
 
-        if( ($this->pdo->prepare($query))->execute($parameters) ) {
+        if (($this->pdo->prepare($query))->execute($parameters)) {
             return $post;
         };
 
@@ -56,7 +57,7 @@ class PostRepositoryByPdo extends RepositoryByPdo
      */
     public function findById(string $pid): Post|false
     {
-        $query =<<<QUERY
+        $query = <<<QUERY
                     SELECT p.id, p.title, p.slug, p.content, p.thumbnail, p.author, p.posted_at,
                            pc.id_category AS cid, c.name  
                     FROM posts AS p 
@@ -69,19 +70,23 @@ class PostRepositoryByPdo extends RepositoryByPdo
         $stmt = $this->pdo->prepare($query);
         $parameters = ['id' => $pid];
 
-        if( $stmt->execute($parameters) && $rows = $stmt->fetchAll() )
-            if (count($rows) > 0 ) {
-                if (isset($rows[0]['thumbnail']) && $rows[0]['thumbnail'] !== '')
-                $rows[0]['thumbnail'] = new FileUploaded('', $rows[0]['thumbnail'] );
+        if ($stmt->execute($parameters) && $rows = $stmt->fetchAll()) {
+            if (count($rows) > 0) {
+                if (isset($rows[0]['thumbnail']) && $rows[0]['thumbnail'] !== '') {
+                    $rows[0]['thumbnail'] = new FileUploaded('', $rows[0]['thumbnail']);
+                }
 
                 $post = Post::createFromArrayAssoc($rows[0]);
-                foreach ( $rows as $r ) {
-                    if ($r['cid'] && $r['name'])
-                    $post->addCategory(  new Category($r['cid'], $r['name'], '') );
+                foreach ($rows as $r) {
+                    if ($r['cid'] && $r['name']) {
+                        $post->addCategory(new Category($r['cid'], $r['name'], ''));
+                    }
                 }
+            }
         };
-        if ($post === null)
-            throw new NotFoundException('A post with ID {'.$pid.'} was not found. ');
+        if ($post === null) {
+            throw new NotFoundException('A post with ID {' . $pid . '} was not found. ');
+        }
 
         return $post;
     }
@@ -90,8 +95,8 @@ class PostRepositoryByPdo extends RepositoryByPdo
     {
         try {
             $thumbnail = $this->findById($pid)->thumbnail();
-            $thumbnail->delete(__DIR__.'/../../public/');
-        } catch(\Throwable $th) {
+            $thumbnail->delete(__DIR__ . '/../../public/');
+        } catch (\Throwable $th) {
             error_log('A problem with the thumbnail file deletion occurred:: ' .
                 $th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
         }
@@ -102,13 +107,16 @@ class PostRepositoryByPdo extends RepositoryByPdo
             $statement = $this->pdo->prepare($query);
             $parameters = ['id' => $pid];
 
-            if( $statement->execute($parameters) ) return true;
-        } catch (\PDOException) {
+            if ($statement->execute($parameters)) {
+                $this->pdo->commit();
+                return true;
+            }
+        } catch (\PDOException $pdoe) {
             error_log('A problem with the post/category deletion occurred:: ' .
-                $th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
+                $pdoe->getFile() . ':' . $pdoe->getLine() . PHP_EOL . $pdoe->getMessage());
             $this->pdo->rollBack();
-            return false;
         }
+        return false;
     }
 
     /**
@@ -116,14 +124,15 @@ class PostRepositoryByPdo extends RepositoryByPdo
      */
     public function findBySlug(string $slug): Post|false
     {
-        $query ='SELECT * FROM posts WHERE slug = :slug';
+        $query = 'SELECT * FROM posts WHERE slug = :slug';
         $statement = $this->pdo->prepare($query);
         $parameters = ['slug' => $slug];
 
-        if( $statement->execute($parameters) ) {
+        if ($statement->execute($parameters)) {
             $inputs = $statement->fetch();
-            if($inputs && count($inputs) > 0)
+            if ($inputs && count($inputs) > 0) {
                 return Post::createFromArrayAssoc($inputs);
+            }
         };
         return false;
     }

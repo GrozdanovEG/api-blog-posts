@@ -1,12 +1,13 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Validator;
 
 use BlogPostsHandling\Api\Entity\Post;
 
 class PostInputValidator extends InputValidator
 {
-
     public function minimalValidation(): self
     {
         $this->validateId();
@@ -16,7 +17,7 @@ class PostInputValidator extends InputValidator
     public function defaultValidation(): self
     {
         foreach (['title', 'content', 'thumbnail', 'author'] as $key) {
-            if ( !isset($this->inputFields[$key]) || $this->inputFields[$key] === '') {
+            if (!isset($this->inputFields[$key]) || $this->inputFields[$key] === '') {
                 $this->errorMessages[] = 'Invalid {' . $key . '} input provided! ';
             }
         }
@@ -26,7 +27,7 @@ class PostInputValidator extends InputValidator
     public function fullValidation(): self
     {
         foreach (['id', 'title', 'slug', 'content', 'thumbnail', 'author'] as $key) {
-            if ( !isset($this->inputFields[$key]) || $this->inputFields[$key] === '') {
+            if (!isset($this->inputFields[$key]) || $this->inputFields[$key] === '') {
                 $this->errorMessages[] = 'Invalid post {' . $key . '} input provided! ';
             }
         }
@@ -39,28 +40,34 @@ class PostInputValidator extends InputValidator
 
     public function slugValidation(): self
     {
-        if ( !isset($this->inputFields['slug']) || $this->inputFields['slug'] === '')
+        if (!isset($this->inputFields['slug']) || $this->inputFields['slug'] === '') {
             $this->errorMessages[] = 'Invalid post { slug } input provided! ';
+        }
 
         return $this;
     }
 
     private function validateId(): void
     {
-        if ( !isset($this->inputFields['id']) || ($this->inputFields['id'] === '') )
+        if (!isset($this->inputFields['id']) || ($this->inputFields['id'] === '')) {
             $this->errorMessages[] = 'Invalid post { id } input provided! ';
+        }
     }
 
     /** @var Post $post */
     public function populateWithObjectData(Post $post): self
     {
-        foreach (['id', 'title', 'slug', 'content', 'thumbnail', 'author', 'postedAt'] as $key)
-        if (!isset($this->inputFields[$key]) ) $this->validatedFields[$key] = $post->{$key}();
+        foreach (['id', 'title', 'slug', 'content', 'thumbnail', 'author', 'postedAt'] as $key) {
+            if (!isset($this->inputFields[$key])) {
+                $this->validatedFields[$key] = $post->{$key}();
+            }
+        }
 
         $postedAtInput = $this->inputFields['posted_at'] ?? $this->inputFields['postedAt'] ?? null;
-        if ($postedAtInput === null) $this->validatedFields['postedAt'] = $post->postedAt();
+        if ($postedAtInput === null) {
+            $this->validatedFields['postedAt'] = $post->postedAt();
+        }
 
         return $this;
     }
-
 }

@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Repository;
 
 use BlogPostsHandling\Api\Entity\{Post,Category};
 
-class PostsCategoriesRepositoryByPdo extends RepositoryByPdo
-                                     implements PostsCategoriesRepositoryInterface
+class PostsCategoriesRepositoryByPdo extends RepositoryByPdo implements PostsCategoriesRepositoryInterface
 {
     /**
      * @inheritDoc
@@ -19,7 +20,7 @@ class PostsCategoriesRepositoryByPdo extends RepositoryByPdo
             'cid' => $category->id()
         ];
 
-        if( $statement->execute($parameters) ) {
+        if ($statement->execute($parameters)) {
             return true;
         };
         return false;

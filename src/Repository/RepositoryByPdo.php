@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Repository;
 
 use DI\Container;
@@ -12,8 +14,11 @@ class RepositoryByPdo extends AbstractRepository
 
     public function __construct(?PDO $pdo = null)
     {
-        if ($pdo) $this->pdo = $pdo;
-        else $this->pdo = $this->setFromContainer()->pdo();
+        if ($pdo) {
+            $this->pdo = $pdo;
+        } else {
+            $this->pdo = $this->setFromContainer()->pdo();
+        }
     }
 
     /** @var Container $container
@@ -32,5 +37,4 @@ class RepositoryByPdo extends AbstractRepository
     {
         return $this->pdo;
     }
-
 }

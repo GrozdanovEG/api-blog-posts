@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Repository;
 
 use BlogPostsHandling\Api\Entity\Category;
@@ -13,8 +15,9 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
     public function store(Category $category): Category|false
     {
         try {
-            if ( $this->findById($category->id()) )
-            $query = 'UPDATE categories SET name = :name, description = :description WHERE id = :id';
+            if ($this->findById($category->id())) {
+                $query = 'UPDATE categories SET name = :name, description = :description WHERE id = :id';
+            }
         } catch (NotFoundException $nfe) {
             $query = 'INSERT INTO categories (id, name, description) VALUES (:id, :name, :description);';
         }
@@ -26,7 +29,7 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
             'description' => $category->description()
         ];
 
-        if( $statement->execute($parameters) ) {
+        if ($statement->execute($parameters)) {
             return $category;
         };
         return false;
@@ -41,10 +44,13 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
 
         $recordsFound = [];
 
-        if( $statement = $this->pdo->query($query) ) {
-            $results= $statement->fetchAll();
-            if($results && count($results) > 0)
-            foreach ($results as $rec) $recordsFound[] = Category::createFromArrayAssoc($rec);
+        if ($statement = $this->pdo->query($query)) {
+            $results = $statement->fetchAll();
+            if ($results && count($results) > 0) {
+                foreach ($results as $rec) {
+                    $recordsFound[] = Category::createFromArrayAssoc($rec);
+                }
+            }
         }
         return $recordsFound;
     }
@@ -61,14 +67,16 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
         $parameters = ['id' => $cid];
         $category = null;
 
-        if( $statement->execute($parameters) ) {
+        if ($statement->execute($parameters)) {
             $inputs = $statement->fetch();
-            if($inputs && count($inputs) > 0)
+            if ($inputs && count($inputs) > 0) {
                 $category = Category::createFromArrayAssoc($inputs);
+            }
         };
 
-        if ($category === null)
-            throw new NotFoundException('A category with ID {'.$cid.'} was not found. ');
+        if ($category === null) {
+            throw new NotFoundException('A category with ID {' . $cid . '} was not found. ');
+        }
 
         return $category;
     }
@@ -79,7 +87,9 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
         $statement = $this->pdo->prepare($query);
         $parameters = ['id' => $cid];
 
-        if( $statement->execute($parameters) ) return true;
+        if ($statement->execute($parameters)) {
+            return true;
+        }
 
         return false;
     }

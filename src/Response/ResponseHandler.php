@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Response;
 
 use Laminas\Diactoros\Response\JsonResponse;
@@ -52,11 +54,21 @@ class ResponseHandler
     {
         $responseData = ['status' => $this->status];
 
-        if (isset($data)) $responseData['data'] = $data;
-        if (isset($this->type)) $responseData['type'] = $this->type;
-        if (isset($this->title)) $responseData['title'] = $this->title;
-        if (isset($this->detail)) $responseData['detail'] = $this->detail;
-        if (isset($this->instance)) $responseData['instance'] = $this->instance;
+        if (isset($data)) {
+            $responseData['data'] = $data;
+        }
+        if (isset($this->type)) {
+            $responseData['type'] = $this->type;
+        }
+        if (isset($this->title)) {
+            $responseData['title'] = $this->title;
+        }
+        if (isset($this->detail)) {
+            $responseData['detail'] = $this->detail;
+        }
+        if (isset($this->instance)) {
+            $responseData['instance'] = $this->instance;
+        }
 
         return new JsonResponse($responseData, $this->status);
     }

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Controller;
 
 use OpenApi\Generator;
@@ -14,7 +16,7 @@ class OpenApiDocController
         $responseHandler = new ResponseHandler();
 
         $path = [ __DIR__ . '/../../src' ];
-        $openApiResponse = json_decode( (Generator::scan($path))->toJson(), true);
+        $openApiResponse = json_decode((Generator::scan($path))->toJson(), true);
 
         return $responseHandler
             ->type('/v1/apidocs')

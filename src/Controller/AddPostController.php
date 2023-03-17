@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Controller;
 
 use BlogPostsHandling\Api\Response\ResponseHandler;
@@ -38,17 +40,20 @@ class AddPostController
         $post = Post::createFromArrayAssoc($inputs);
 
         try {
-            if ( $postRepository->store($post)  &&
-                (isset($thumbnail) && $thumbnail->store(__DIR__.'/../../public/') )
-            ) return $responseHandler
+            if (
+                $postRepository->store($post)  &&
+                (isset($thumbnail) && $thumbnail->store(__DIR__ . '/../../public/') )
+            ) {
+                return $responseHandler
                 ->type('/v1/post_added')
                 ->title('post_added')
                 ->status(201)
-                ->detail('post ['.$post->title().'] successfully added')
+                ->detail('post [' . $post->title() . '] successfully added')
                 ->jsonSend(["post" => $post->toMap()]);
-        } catch (\Throwable $th)  {
+            }
+        } catch (\Throwable $th) {
             error_log('Error occurred -> ' .
-                "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}".PHP_EOL);
+                "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
             return $responseHandler
                 ->type('/v1/errors/post_not_added')
                 ->title('post_not_added')

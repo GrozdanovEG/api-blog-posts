@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Validator;
 
 class InputValidator
@@ -21,8 +23,9 @@ class InputValidator
     /** @throws InvalidInputsException */
     public function sendResult(): bool
     {
-        if (count($this->errorMessages) > 0)
+        if (count($this->errorMessages) > 0) {
             throw new InvalidInputsException($this->errorMessages);
+        }
 
         return true;
     }
@@ -32,5 +35,4 @@ class InputValidator
     {
         return $this->validatedFields;
     }
-
 }

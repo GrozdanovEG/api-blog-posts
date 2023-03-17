@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Factory;
 
 use DI\Container;
@@ -10,8 +12,8 @@ class ContainerFactory
     {
         $container = new Container();
 
-        $container->set('PdoDbConn', static function() {
-            return (new PdoConnectionFactory)();
+        $container->set('PdoDbConn', static function () {
+            return (new PdoConnectionFactory())();
         });
 
         return $container;

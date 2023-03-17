@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Controller;
 
 use BlogPostsHandling\Api\Entity\Category;
@@ -33,21 +35,21 @@ class AddCategoryController
         $category = Category::createFromArrayAssoc($inputs);
 
         try {
-            if (  $categoryRepository->store($category) )
+            if ($categoryRepository->store($category)) {
                 return $responseHandler
                     ->type('/v1/errors/category_added')
                     ->title('new_category_added')
                     ->status(201)
-                    ->detail('category ['.$category->name().'] successfully added')
+                    ->detail('category [' . $category->name() . '] successfully added')
                     ->jsonSend([$category->toMap()]);
-
+            }
         } catch (\Throwable $th) {
-            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}".PHP_EOL);
+            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
             return $responseHandler
                 ->type('/v1/errors/category_storing_failed')
                 ->title('category_creation_failure')
                 ->status(500)
-                ->detail('the category ['.$category->name().'] was not added due to a server error')
+                ->detail('the category [' . $category->name() . '] was not added due to a server error')
                 ->jsonSend();
         }
     }

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace BlogPostsHandling\Api\Controller;
 
 use DI\NotFoundException;
@@ -23,23 +25,21 @@ class GetCategoryController
         try {
             $categoryInputValidator = new CategoryInputValidator($inputs);
             $categoryInputValidator->minimalValidation()->sendResult();
-            $category = $categoryRepository->findById( $inputs['id'] );
-
+            $category = $categoryRepository->findById($inputs['id']);
         } catch (InvalidInputsException $iie) {
             return $responseHandler
                 ->type('/v1/errors/wrong_input_data')
                 ->title('wrong_input_data')
                 ->status(400)
-                ->detail('A category ['.$inputs['id'].'] was not found, no sufficient or invalid input data provided')
+                ->detail('A category [' . $inputs['id'] . '] was not found, no sufficient or invalid input data provided')
                 ->jsonSend($iie->getErrorMessages());
-
         } catch (NotFoundException $nfe) {
             error_log($nfe->getMessage() . PHP_EOL);
             return $responseHandler
                 ->type('/v1/errors/category_not_found')
                 ->title('category_not_found')
                 ->status(404)
-                ->detail('A category with id ['. $inputs['id'] .'] was not found, nothing to be retrieved')
+                ->detail('A category with id [' . $inputs['id'] . '] was not found, nothing to be retrieved')
                 ->jsonSend();
         }
 
@@ -50,10 +50,9 @@ class GetCategoryController
                 ->status(200)
                 ->detail('category {' . $category->name() . '} was successfully found')
                 ->jsonSend(['category' => $category->toMap()]);
-
         } catch (\Throwable $th) {
             error_log('Error occurred -> ' .
-                "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}".PHP_EOL);
+                "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
 
             return $responseHandler
                 ->type('/v1/errors/category_cannot_be_fetched')
@@ -64,4 +63,3 @@ class GetCategoryController
         }
     }
 }
-
