@@ -2,13 +2,12 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
 
-use BlogPostsHandling\Api\Response\ResponseHandler;
-use BlogPostsHandling\Api\Validator\CategoryInputValidator;
-use BlogPostsHandling\Api\Validator\InvalidInputsException;
 use DI\NotFoundException;
+use BlogPostsHandling\Api\Response\ResponseHandler;
+use BlogPostsHandling\Api\Repository\CategoryRepositoryByPdo;
+use BlogPostsHandling\Api\Validator\{CategoryInputValidator,InvalidInputsException};
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use BlogPostsHandling\Api\Repository\CategoryRepositoryByPdo;
 
 class DeleteCategoryController
 {

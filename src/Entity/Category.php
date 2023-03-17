@@ -27,7 +27,6 @@ class Category
         );
     }
 
-
     public function id(): string
     { 
         return $this->id;
@@ -50,7 +49,8 @@ class Category
 
     public function toMap(): array
     {
-        return ['id' => $this->id, 'name' => $this->name, 'description' => $this->description];
+        return ['id' => $this->id, 'name' => $this->name,
+                'description' => $this->description];
     }
 
     public function toMapShort(): array
@@ -58,9 +58,4 @@ class Category
         return ['id' => $this->id, 'name' => $this->name];
     }
 
-    /* useless for now, might be removed */
-    public function toJsonString(): string
-    {
-        return '{"id":"'.$this->id().'", "name": "'.$this->name().'", "description": "'.$this->description().'"}';
-    }
 }

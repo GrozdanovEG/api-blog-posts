@@ -89,6 +89,7 @@ class Post
         return $this;
     }
 
+    /** @return Category[] */
     public function categories(): array
     {
         return $this->categories;
@@ -107,7 +108,7 @@ class Post
             'author' => $this->author(),
             'postedAt' => $this->postedAt()->format('Y-m-d H:i:s'),
             'categories' => array_map(
-                function($c) {return $c->toMapShort();},
+                function($c) { return $c->toMapShort();},
                 $this->categories()
             )
         ];
@@ -121,6 +122,5 @@ class Post
             'author' => $this->author(),
             'postedAt' => $this->postedAt()->format('Y-m-d H:i:s')
             ];
-
     }
 }

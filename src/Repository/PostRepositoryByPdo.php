@@ -3,9 +3,10 @@ declare(strict_types=1);
 namespace BlogPostsHandling\Api\Repository;
 
 use DI\NotFoundException;
-use BlogPostsHandling\Api\Entity\{FileUploaded, Post, Category};
+use BlogPostsHandling\Api\Entity\{FileUploaded,Post,Category};
 
-class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInterface
+class PostRepositoryByPdo extends RepositoryByPdo
+                          implements PostRepositoryInterface
 {
     /**
      * @inheritDoc
@@ -96,12 +97,18 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
         }
 
         $query = 'DELETE FROM posts_categories WHERE id_post = :id; DELETE FROM posts WHERE id = :id';
-        $statement = $this->pdo->prepare($query);
-        $parameters = ['id' => $pid];
+        try {
+            $this->pdo->beginTransaction();
+            $statement = $this->pdo->prepare($query);
+            $parameters = ['id' => $pid];
 
-        if( $statement->execute($parameters) ) return true;
-
-        return false;
+            if( $statement->execute($parameters) ) return true;
+        } catch (\PDOException) {
+            error_log('A problem with the post/category deletion occurred:: ' .
+                $th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
+            $this->pdo->rollBack();
+            return false;
+        }
     }
 
     /**

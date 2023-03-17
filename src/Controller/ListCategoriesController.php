@@ -4,7 +4,6 @@ namespace BlogPostsHandling\Api\Controller;
 
 use BlogPostsHandling\Api\Repository\CategoryRepositoryByPdo;
 use BlogPostsHandling\Api\Response\ResponseHandler;
-use OpenApi\Tests\Fixtures\ThirdPartyAnnotations;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Throwable;
@@ -24,7 +23,7 @@ class ListCategoriesController
                 ->detail('categories successfully retrieved')
                 ->jsonSend(["categories" => array_map(fn($c) => $c->toMap(), $categories)]);
 
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}".PHP_EOL);
 
             return $responseHandler

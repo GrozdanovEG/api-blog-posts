@@ -25,39 +25,6 @@ class FileUploaded
         $this->extractPropertiesFromEnvironment();
     }
 
-    private function extractPropertiesFromB64String(string $b64SourceString): bool
-    {
-        try {
-            $b64Parts = explode(',', $b64SourceString);
-            $this->b64FileContent = $b64Parts[count($b64Parts)-1];
-            $fileExtension = explode(';',
-                    explode('/', $b64Parts[0])[1]
-                )[0];
-            $this->hostFilename = $this->generateUniqueFilename($fileExtension);
-            return true;
-        } catch (\Throwable $th) {
-            error_log($th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
-            return false;
-        }
-    }
-
-    private function generateUniqueFilename(string $fileExtension): ?string
-    {
-        return Uuid::uuid4()->toString() . '.' . $fileExtension;
-    }
-
-    public function extractPropertiesFromEnvironment(): bool
-    {
-        try {
-            $this->hostUploadFolderPath = $_ENV['HOST_THUMBNAILS_PATH'];
-            $this->hostRootUri = $_ENV['HOST_ROOT_URI'] ?? 'http://'. $_SERVER['HTTP_HOST'];
-            return true;
-        } catch (\Throwable $th) {
-            error_log($th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
-        }
-        return false;
-    }
-
     public function hostFilename(): string
     {
         return $this->hostFilename;
@@ -138,5 +105,38 @@ class FileUploaded
     public function __toString(): string
     {
         return $this->hostFilename;
+    }
+
+    private function extractPropertiesFromB64String(string $b64SourceString): bool
+    {
+        try {
+            $b64Parts = explode(',', $b64SourceString);
+            $this->b64FileContent = $b64Parts[count($b64Parts)-1];
+            $fileExtension = explode(';',
+                explode('/', $b64Parts[0])[1]
+            )[0];
+            $this->hostFilename = $this->generateUniqueFilename($fileExtension);
+            return true;
+        } catch (\Throwable $th) {
+            error_log($th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
+            return false;
+        }
+    }
+
+    private function extractPropertiesFromEnvironment(): bool
+    {
+        try {
+            $this->hostUploadFolderPath = $_ENV['HOST_THUMBNAILS_PATH'];
+            $this->hostRootUri = $_ENV['HOST_ROOT_URI'] ?? 'http://'. $_SERVER['HTTP_HOST'];
+            return true;
+        } catch (\Throwable $th) {
+            error_log($th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
+        }
+        return false;
+    }
+
+    private function generateUniqueFilename(string $fileExtension): ?string
+    {
+        return Uuid::uuid4()->toString() . '.' . $fileExtension;
     }
 }

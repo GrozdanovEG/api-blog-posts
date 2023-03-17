@@ -2,11 +2,11 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
 
+use DI\NotFoundException;
 use BlogPostsHandling\Api\Entity\Post;
 use BlogPostsHandling\Api\Repository\PostRepositoryByPdo;
 use BlogPostsHandling\Api\Response\ResponseHandler;
-use BlogPostsHandling\Api\Validator\InvalidInputsException;
-use BlogPostsHandling\Api\Validator\PostInputValidator;
+use BlogPostsHandling\Api\Validator\{PostInputValidator,InvalidInputsException};
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -26,7 +26,7 @@ class GetPostsBySlugController
             $postInputValidator = new PostInputValidator($inputs);
             $postInputValidator->slugValidation()->sendResult();
             $post = $postRepository->findBySlug( $inputs['slug']  );
-        } catch (\NotFoundException $nfe) {
+        } catch (NotFoundException $nfe) {
             return $responseHandler
                 ->type('/v1/errors/post_slug_not_found')
                 ->title('invalid_post_slug')
@@ -42,21 +42,25 @@ class GetPostsBySlugController
                 ->jsonSend($iie->getErrorMessages());
         }
 
-        if ( $post instanceof Post) {
-            return $responseHandler
-                ->type('/v1/resource_found')
-                ->title('post_found')
-                ->status(200)
-                ->detail('post ['.$post->title().'] with slug ['. $post->slug() .'] was successfully found')
-                ->jsonSend(["post" => $post->toMap()]);
-        }
+        try {
+            if ( $post instanceof Post)
+                return $responseHandler
+                    ->type('/v1/resource_found')
+                    ->title('post_found')
+                    ->status(200)
+                    ->detail('post ['.$post->title().'] with slug ['. $post->slug() .'] was successfully found')
+                    ->jsonSend(["post" => $post->toMap()]);
 
-        return $responseHandler
+        } catch (\Throwable $th) {
+            error_log('Error occurred -> '
+                . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
+            return $responseHandler
                 ->type('/v1/errors/post_not_found')
                 ->title('post_not_found')
                 ->status(404)
                 ->detail('A post with slug [' . $inputs['slug'] . '] was not found for unknown reason, nothing to be retrieved')
                 ->jsonSend();
+        }
     }
 }
 

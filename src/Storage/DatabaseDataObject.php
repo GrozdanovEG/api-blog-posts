@@ -21,7 +21,6 @@ class DatabaseDataObject
         $this->port = $dbData['port'];
     }
 
-
     public function databaseType(): string
     {
         return $this->databaseType;
@@ -52,6 +51,7 @@ class DatabaseDataObject
         return $this->port;
     }
 
+    /** @return string */
     public function generatePdoDsn(?string $databaseType = null): string
     {
         $dbType = $databaseType ?? $this->databaseType();

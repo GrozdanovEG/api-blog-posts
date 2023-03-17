@@ -10,7 +10,6 @@ class PostCategoryInputValidator extends InputValidator
         return $this;
     }
 
-
     private function validateIds(): void
     {
         if ( !isset($this->inputFields['pid']) || $this->inputFields['pid'] === '')

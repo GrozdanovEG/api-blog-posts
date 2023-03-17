@@ -10,9 +10,8 @@ class CategoryRepositoryByPdo extends RepositoryByPdo implements CategoryReposit
     /**
      * @inheritDoc
      */
-    public function store(Category $category): Category
+    public function store(Category $category): Category|false
     {
-        /** @todo the logic to be moved to a query builder class/method */
         try {
             if ( $this->findById($category->id()) )
             $query = 'UPDATE categories SET name = :name, description = :description WHERE id = :id';

@@ -2,14 +2,13 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
 
-use BlogPostsHandling\Api\Response\ResponseHandler;
-use BlogPostsHandling\Api\Validator\CategoryInputValidator;
-use BlogPostsHandling\Api\Validator\InvalidInputsException;
 use DI\NotFoundException;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use BlogPostsHandling\Api\Response\ResponseHandler;
+use BlogPostsHandling\Api\Validator\{InvalidInputsException,CategoryInputValidator};
 use BlogPostsHandling\Api\Entity\Category;
 use BlogPostsHandling\Api\Repository\CategoryRepositoryByPdo;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 class UpdateCategoryController
 {
@@ -58,9 +57,7 @@ class UpdateCategoryController
                 ->detail('category ['.$category->name().'] successfully updated with the following data')
                 ->jsonSend(["category" => $category->toMap()]);
 
-        }
-
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}".PHP_EOL);
             return $responseHandler
                 ->type('/v1/errors/category_update_failure')

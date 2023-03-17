@@ -2,14 +2,13 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
 
-use BlogPostsHandling\Api\Entity\Post;
-use BlogPostsHandling\Api\Validator\InvalidInputsException;
-use BlogPostsHandling\Api\Validator\PostInputValidator;
 use DI\NotFoundException;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use BlogPostsHandling\Api\Entity\Post;
+use BlogPostsHandling\Api\Validator\{PostInputValidator,InvalidInputsException};
 use BlogPostsHandling\Api\Response\ResponseHandler;
 use BlogPostsHandling\Api\Repository\PostRepositoryByPdo;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 class GetPostController
 {
@@ -23,7 +22,15 @@ class GetPostController
         try {
             $postInputValidator = new PostInputValidator($inputs);
             $postInputValidator->minimalValidation()->sendResult();
-            $post = $postRepository->findById( $inputs['id'] );
+            $post = $postRepository->findById($inputs['id']);
+
+        } catch (InvalidInputsException $iie) {
+            return $responseHandler
+                ->type('/v1/errors/wrong_input_data')
+                ->title('wrong_input_data')
+                ->status(400)
+                ->detail('the post [' . $inputs['id'] . '] was not retrieved, no sufficient or invalid input data provided')
+                ->jsonSend($iie->getErrorMessages());
 
         } catch (NotFoundException $nfe) {
             return $responseHandler
@@ -34,20 +41,23 @@ class GetPostController
                 ->jsonSend();
         }
 
-        if ( $post instanceof Post) {
-            return $responseHandler
+        try {
+            if ( $post instanceof Post)
+                return $responseHandler
                     ->type('/v1/resource_found')
                     ->title('post_found')
                     ->status(200)
                     ->detail('post ['.$post->title().'] was successfully found')
                     ->jsonSend(["post" => $post->toMap()]);
+        } catch (\Throwable $th) {
+            error_log('Error occurred -> '
+                . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
+            return $responseHandler
+                ->type('/v1/errors/post_cannot_be_fetched')
+                ->title('post_cannot_be_fetched')
+                ->status(500)
+                ->detail('A post with id ['. $inputs['id'] .'] not found for unknown reason, nothing to be retrieved')
+                ->jsonSend();
         }
-
-        return $responseHandler
-                    ->type('/v1/errors/post_cannot_be_fetched')
-                    ->title('post_cannot_be_fetched')
-                    ->status(500)
-                    ->detail('A post with id ['. $inputs['id'] .'] not found for unknown reason, nothing to be retrieved')
-                    ->jsonSend();
     }
 }

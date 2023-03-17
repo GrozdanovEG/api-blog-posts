@@ -1,12 +1,9 @@
 <?php
 declare(strict_types=1);
-
 namespace BlogPostsHandling\Api\Controller;
 
 use BlogPostsHandling\Api\Response\ResponseHandler;
-use BlogPostsHandling\Api\Validator\InvalidInputsException;
-use BlogPostsHandling\Api\Validator\PostInputValidator;
-use DI\NotFoundException;
+use BlogPostsHandling\Api\Validator\{InvalidInputsException,PostInputValidator};
 use BlogPostsHandling\Api\Entity\{Post,FileUploaded};
 use BlogPostsHandling\Api\Repository\PostRepositoryByPdo;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -38,23 +35,26 @@ class AddPostController
                 ->jsonSend($iie->getErrorMessages());
         }
 
-        //echo '<pre>'; var_dump($inputs); exit;
         $post = Post::createFromArrayAssoc($inputs);
 
-        if ( $postRepository->store($post)  &&
-            (isset($thumbnail) && $thumbnail->store(__DIR__.'/../../public/') )
-        ) return $responseHandler
-            ->type('/v1/post_added')
-            ->title('post_added')
-            ->status(201)
-            ->detail('post ['.$post->title().'] successfully added')
-            ->jsonSend(["post" => $post->toMap()]);
-
-        else return $responseHandler
-            ->type('/v1/errors/post_not_added')
-            ->title('post_not_added')
-            ->status(500)
-            ->detail('a new post cannot be added due to a server error')
-            ->jsonSend();
+        try {
+            if ( $postRepository->store($post)  &&
+                (isset($thumbnail) && $thumbnail->store(__DIR__.'/../../public/') )
+            ) return $responseHandler
+                ->type('/v1/post_added')
+                ->title('post_added')
+                ->status(201)
+                ->detail('post ['.$post->title().'] successfully added')
+                ->jsonSend(["post" => $post->toMap()]);
+        } catch (\Throwable $th)  {
+            error_log('Error occurred -> ' .
+                "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}".PHP_EOL);
+            return $responseHandler
+                ->type('/v1/errors/post_not_added')
+                ->title('post_not_added')
+                ->status(500)
+                ->detail('a new post cannot be added due to a server error')
+                ->jsonSend();
+        }
     }
 }

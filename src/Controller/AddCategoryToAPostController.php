@@ -8,8 +8,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use BlogPostsHandling\Api\Repository\{CategoryRepositoryByPdo,PostRepositoryByPdo};
 use BlogPostsHandling\Api\Repository\PostsCategoriesRepositoryByPdo;
 use BlogPostsHandling\Api\Response\ResponseHandler;
-use BlogPostsHandling\Api\Validator\PostCategoryInputValidator;
-use BlogPostsHandling\Api\Validator\InvalidInputsException;
+use BlogPostsHandling\Api\Validator\{PostCategoryInputValidator,InvalidInputsException};
 
 class AddCategoryToAPostController
 {

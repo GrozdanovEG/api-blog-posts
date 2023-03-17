@@ -8,8 +8,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use BlogPostsHandling\Api\Entity\Post;
 use BlogPostsHandling\Api\Repository\PostRepositoryByPdo;
 use BlogPostsHandling\Api\Response\ResponseHandler;
-use BlogPostsHandling\Api\Validator\PostInputValidator;
-use BlogPostsHandling\Api\Validator\InvalidInputsException;
+use BlogPostsHandling\Api\Validator\{PostInputValidator,InvalidInputsException};
 
 class UpdatePostController
 {
@@ -45,9 +44,9 @@ class UpdatePostController
                 ->jsonSend($iie->getErrorMessages());
         }
 
-        $post = Post::createFromArrayAssoc($postInputValidator->validatedFields());
-
-        if ( $postRepository->store($post) )
+        try {
+            $post = Post::createFromArrayAssoc( $postInputValidator->validatedFields() );
+            if ( $postRepository->store($post) )
             return $responseHandler
                 ->type('/v1/post_updated')
                 ->title('post_updated')
@@ -55,11 +54,15 @@ class UpdatePostController
                 ->detail('post ['.$post->title().'] successfully updated with the following data')
                 ->jsonSend(["post" => $post->toMap()]);
 
-        else return $responseHandler
-            ->type('/v1/errors/post_update_failure')
-            ->title('post_update_failure')
-            ->status(500)
-            ->detail('the post ['.$post->title().'] was not updated')
-            ->jsonSend(["post" => $post->toMap()]);
+        } catch (\Throwable $th) {
+            error_log('Error occurred -> '
+                . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
+            return $responseHandler
+                ->type('/v1/errors/post_update_failure')
+                ->title('post_update_failure')
+                ->status(500)
+                ->detail('the post id '.$inputs['id'].' was not updated due to a server error')
+                ->jsonSend();
+        }
     }
 }

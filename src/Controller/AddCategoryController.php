@@ -5,8 +5,7 @@ namespace BlogPostsHandling\Api\Controller;
 use BlogPostsHandling\Api\Entity\Category;
 use BlogPostsHandling\Api\Repository\CategoryRepositoryByPdo;
 use BlogPostsHandling\Api\Response\ResponseHandler;
-use BlogPostsHandling\Api\Validator\CategoryInputValidator;
-use BlogPostsHandling\Api\Validator\InvalidInputsException;
+use BlogPostsHandling\Api\Validator\{InvalidInputsException,CategoryInputValidator};
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -51,7 +50,5 @@ class AddCategoryController
                 ->detail('the category ['.$category->name().'] was not added due to a server error')
                 ->jsonSend();
         }
-
-
     }
 }

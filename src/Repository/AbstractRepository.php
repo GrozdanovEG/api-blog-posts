@@ -5,7 +5,6 @@ namespace BlogPostsHandling\Api\Repository;
 use DI\Container;
 use BlogPostsHandling\Api\Factory\ContainerFactory;
 
-
 abstract class AbstractRepository
 {
     protected Container $container;

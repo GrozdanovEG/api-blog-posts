@@ -2,10 +2,8 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Factory;
 
-use BlogPostsHandling\Api\Storage\StorageData;
-use BlogPostsHandling\Api\Storage\DatabaseDataObject;
-use BlogPostsHandling\Api\Storage\DatabaseConnection;
 use \PDO;
+use BlogPostsHandling\Api\Storage\{StorageData,DatabaseDataObject,DatabaseConnection};
 
 class PdoConnectionFactory
 {

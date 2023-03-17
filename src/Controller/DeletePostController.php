@@ -2,14 +2,13 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
 
+use DI\NotFoundException;
 use BlogPostsHandling\Api\Entity\Post;
 use BlogPostsHandling\Api\Response\ResponseHandler;
-use BlogPostsHandling\Api\Validator\InvalidInputsException;
-use BlogPostsHandling\Api\Validator\PostInputValidator;
-use DI\NotFoundException;
+use BlogPostsHandling\Api\Repository\PostRepositoryByPdo;
+use BlogPostsHandling\Api\Validator\{InvalidInputsException,PostInputValidator};
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use BlogPostsHandling\Api\Repository\PostRepositoryByPdo;
 
 class DeletePostController
 {
@@ -24,13 +23,6 @@ class DeletePostController
             $postInputValidator = new PostInputValidator($inputs);
             $postInputValidator->minimalValidation()->sendResult();
             $post = $postRepository->findById( $inputs['id'] );
-        } catch (NotFoundException $nfe) {
-            return $responseHandler
-                ->type('/v1/errors/post_id_not_found')
-                ->title('post_id_not_found')
-                ->status(404)
-                ->detail($nfe->getMessage() . 'Nothing to be deleted. ')
-                ->jsonSend();
         } catch (InvalidInputsException $iie) {
             return $responseHandler
                 ->type('/v1/errors/wrong_input_data')
@@ -38,23 +30,33 @@ class DeletePostController
                 ->status(400)
                 ->detail('the post ['.$inputs['id'].'] was not deleted, no sufficient or invalid input data provided')
                 ->jsonSend($iie->getErrorMessages());
+
+        } catch (NotFoundException $nfe) {
+            return $responseHandler
+                ->type('/v1/errors/post_id_not_found')
+                ->title('post_id_not_found')
+                ->status(404)
+                ->detail($nfe->getMessage() . 'Nothing to be deleted. ')
+                ->jsonSend();
         }
 
-        //echo '<pre>'; var_dump($post->toMap()); exit;
-        if (($post instanceof Post) &&
-             $postRepository->deleteById($post->id()) )
+        try {
+            if (($post instanceof Post) &&
+                $postRepository->deleteById($post->id()) )
+                return $responseHandler
+                    ->type('/v1/post_deleted')
+                    ->title('post_deleted')
+                    ->status(200)
+                    ->detail('post ['.$post->title().'] was successfully deleted')
+                    ->jsonSend(["post" => $post->toMapShort()]);
+        } catch (\Throwable $th) {
+            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
             return $responseHandler
-                ->type('/v1/post_deleted')
-                ->title('post_deleted')
-                ->status(200)
-                ->detail('post ['.$post->title().'] was successfully deleted')
-                ->jsonSend(["post" => $post->toMapShort()]);
-
-        return $responseHandler
-            ->type('/v1/errors/post_deletion_failure')
-            ->title('post_not_deleted')
-            ->status(500)
-            ->detail('the post ['.$post->title().'] was not deleted for unknown reason')
-            ->jsonSend(["msgid" => 'post_deletion_failure']);
+                ->type('/v1/errors/post_deletion_failure')
+                ->title('post_not_deleted')
+                ->status(500)
+                ->detail('the post ['.$post->title().'] was not deleted due to a server error')
+                ->jsonSend(["msgid" => 'post_deletion_failure']);
+        }
     }
 }

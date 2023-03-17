@@ -19,14 +19,15 @@ class DatabaseConnection implements Connectable
         return $this->databaseDataObject;
     }
 
-    /**  @return PDO|false  */    // @todo To Be replaced with NullObject
+    /**  @return PDO|false  */
     public function connect(): PDO|false
     {
         try {
             $dbdo = $this->databaseDataObject();
             return new PDO((string)$dbdo, $dbdo->username(), $dbdo->password());
 
-        } catch (Throwable $throwable) {
+        } catch (\Throwable $th) {
+            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}".PHP_EOL);
             return false;
         }
     }

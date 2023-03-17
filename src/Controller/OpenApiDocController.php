@@ -2,8 +2,8 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Controller;
 
-use BlogPostsHandling\Api\Response\ResponseHandler;
 use OpenApi\Generator;
+use BlogPostsHandling\Api\Response\ResponseHandler;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -17,7 +17,7 @@ class OpenApiDocController
         $openApiResponse = json_decode( (Generator::scan($path))->toJson(), true);
 
         return $responseHandler
-            ->type('/v1/api_documentation')
+            ->type('/v1/apidocs')
             ->title('apidocs')
             ->status(200)
             ->detail('Api documentation successfully loaded')

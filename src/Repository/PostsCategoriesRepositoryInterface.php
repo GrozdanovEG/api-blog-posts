@@ -11,10 +11,4 @@ interface PostsCategoriesRepositoryInterface
      *  @return bool
      */
     public function store(Post $post, Category $category): bool;
-
-    /** @var Post $post
-     *  @var Category $category
-     *  @return bool
-     */
-    public function delete(Post $post, Category $category): bool;
 }

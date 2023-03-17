@@ -2,10 +2,10 @@
 declare(strict_types=1);
 namespace BlogPostsHandling\Api\Repository;
 
-use BlogPostsHandling\Api\Entity\Category;
-use BlogPostsHandling\Api\Entity\Post;
+use BlogPostsHandling\Api\Entity\{Post,Category};
 
-class PostsCategoriesRepositoryByPdo extends RepositoryByPdo implements PostsCategoriesRepositoryInterface
+class PostsCategoriesRepositoryByPdo extends RepositoryByPdo
+                                     implements PostsCategoriesRepositoryInterface
 {
     /**
      * @inheritDoc
@@ -22,15 +22,6 @@ class PostsCategoriesRepositoryByPdo extends RepositoryByPdo implements PostsCat
         if( $statement->execute($parameters) ) {
             return true;
         };
-        return false;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function delete(Post $post, Category $category): bool
-    {
-        // TODO: Implement delete() method.
         return false;
     }
 }
