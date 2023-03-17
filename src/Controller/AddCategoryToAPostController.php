@@ -46,17 +46,16 @@ class AddCategoryToAPostController
         }
 
         try {
-            if (  (new PostsCategoriesRepositoryByPdo())->store($post, $category) ) {
+            (new PostsCategoriesRepositoryByPdo())->store($post, $category);
                 return $responseHandler
                     ->type('/v1/category_added_to_a_post')
                     ->title('adding_category_to_post_success')
                     ->status(200)
                     ->detail('category {' . $category->name() . '} added to the post {' . $post->title() . '}')
                     ->jsonSend();
-            } else
-                throw new \Error('post/category object cannot be stored');
         } catch (\Throwable $th) {
-            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
+            error_log('Error occurred -> ' .
+                "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
             return $responseHandler
                 ->type('/v1/errors/operation_failure')
                 ->title('operation_failure')

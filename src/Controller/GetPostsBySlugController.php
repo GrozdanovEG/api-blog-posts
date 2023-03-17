@@ -41,7 +41,7 @@ class GetPostsBySlugController
                 ->type('/v1/errors/wrong_input_data')
                 ->title('wrong_input_data')
                 ->status(400)
-                ->detail('the post [' . $inputs['id'] . '] was not updated, no sufficient or invalid input data provided')
+                ->detail('post not updated, no sufficient or invalid input data provided')
                 ->jsonSend($iie->getErrorMessages());
             }
         }
@@ -54,16 +54,17 @@ class GetPostsBySlugController
                     ->status(200)
                     ->detail('post [' . $post->title() . '] with slug [' . $post->slug() . '] was successfully found')
                     ->jsonSend(["post" => $post->toMap()]);
-            } else
+            } else {
                 throw new \Error('Valid post object cannot be returned ');
+            }
         } catch (\Throwable $th) {
             error_log('Error occurred -> '
                 . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
             return $responseHandler
-                ->type('/v1/errors/post_not_found')
-                ->title('post_not_found')
-                ->status(404)
-                ->detail('A post with slug [' . $inputs['slug'] . '] was not found for unknown reason, nothing to be retrieved')
+                ->type('/v1/errors/operation_failure')
+                ->title('operation_failure')
+                ->status(500)
+                ->detail('post not found due to a server error')
                 ->jsonSend();
         }
     }

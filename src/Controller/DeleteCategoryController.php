@@ -38,7 +38,7 @@ class DeleteCategoryController
                 ->type('/v1/errors/wrong_input_data')
                 ->title('wrong_input_data')
                 ->status(400)
-                ->detail('A category [' . $inputs['id'] . '] was not found, no sufficient or invalid input data provided')
+                ->detail('Category not found, no sufficient or invalid input data provided')
                 ->jsonSend($iie->getErrorMessages());
         }
 
@@ -50,10 +50,12 @@ class DeleteCategoryController
                     ->status(200)
                     ->detail('category [' . $category->name() . '] was successfully deleted')
                     ->jsonSend([$category->toMap()]);
-            } else
+            } else {
                 throw new \Error('No valid category object to be deleted ');
+            }
         } catch (\Throwable $th) {
-            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
+            error_log('Error occurred -> '
+                . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
             return $responseHandler
                 ->type('/v1/errors/category_deletion_failure')
                 ->title('category_deletion_failure')

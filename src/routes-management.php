@@ -12,9 +12,8 @@ use BlogPostsHandling\Api\Controller\{ListCategoriesController,AddCategoryToAPos
 use BlogPostsHandling\Api\Controller\OpenApiDocController;
 
 /* Application routes  */
-if (isset($app)) /* added upon suggestion by PHPStan*/
-{
-
+/* if condition added upon suggestion by PHPStan */
+if (isset($app)) {
     $app->get('/v1', HomeController::class);
 
     $app->post('/v1/new/category', AddCategoryController::class);

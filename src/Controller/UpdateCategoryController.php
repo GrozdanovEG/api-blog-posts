@@ -50,15 +50,15 @@ class UpdateCategoryController
 
         try {
             $categoryRepository->store($category);
-                return $responseHandler
+            return $responseHandler
                 ->type('/v1/category_updated')
                 ->title('category_updated')
                 ->status(200)
                 ->detail('category [' . $category->name() . '] successfully updated with the following data')
                 ->jsonSend(["category" => $category->toMap()]);
-
         } catch (\Throwable $th) {
-            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
+            error_log('Error occurred -> ' .
+                "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
             return $responseHandler
                 ->type('/v1/errors/category_update_failure')
                 ->title('category_storing_failure')

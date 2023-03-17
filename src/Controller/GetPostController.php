@@ -30,7 +30,7 @@ class GetPostController
                 ->type('/v1/errors/wrong_input_data')
                 ->title('wrong_input_data')
                 ->status(400)
-                ->detail('the post [' . $inputs['id'] . '] was not retrieved, no sufficient or invalid input data provided')
+                ->detail('post not retrieved, no sufficient or invalid input data provided')
                 ->jsonSend($iie->getErrorMessages());
         } catch (NotFoundException $nfe) {
             return $responseHandler
@@ -49,8 +49,9 @@ class GetPostController
                     ->status(200)
                     ->detail('post [' . $post->title() . '] was successfully found')
                     ->jsonSend(["post" => $post->toMap()]);
-            } else
+            } else {
                 throw new \Error('Valid post object cannot be returned ');
+            }
         } catch (\Throwable $th) {
             error_log('Error occurred -> '
                 . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);

@@ -25,7 +25,8 @@ class ListCategoriesController
                 ->detail('categories successfully retrieved')
                 ->jsonSend(["categories" => array_map(fn($c) => $c->toMap(), $categories)]);
         } catch (Throwable $th) {
-            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
+            error_log('Error occurred -> ' .
+                "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
 
             return $responseHandler
                 ->type('/v1/categories_unavailable')

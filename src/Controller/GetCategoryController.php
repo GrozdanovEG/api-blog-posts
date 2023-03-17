@@ -31,7 +31,7 @@ class GetCategoryController
                 ->type('/v1/errors/wrong_input_data')
                 ->title('wrong_input_data')
                 ->status(400)
-                ->detail('A category [' . $inputs['id'] . '] was not found, no sufficient or invalid input data provided')
+                ->detail('A category [' . $inputs['id'] . '] was not found, insufficient/invalid input data provided')
                 ->jsonSend($iie->getErrorMessages());
         } catch (NotFoundException $nfe) {
             error_log($nfe->getMessage() . PHP_EOL);
@@ -58,7 +58,7 @@ class GetCategoryController
                 ->type('/v1/errors/category_cannot_be_fetched')
                 ->title('category_cannot_be_fetched')
                 ->status(500)
-                ->detail('A category with id [' . $inputs['id'] . '] not found for unknown reason, nothing to be retrieved')
+                ->detail('A category cannot be fetched due to a server error. ')
                 ->jsonSend();
         }
     }

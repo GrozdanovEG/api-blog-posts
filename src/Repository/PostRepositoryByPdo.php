@@ -71,8 +71,8 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
         $parameters = ['id' => $pid];
 
         if ($stmt->execute($parameters) && $rows = $stmt->fetchAll()) {
-                if (isset($rows[0]['thumbnail']) && $rows[0]['thumbnail'] !== '') {
-                    $rows[0]['thumbnail'] = new FileUploaded('', $rows[0]['thumbnail']);
+            if (isset($rows[0]['thumbnail']) && $rows[0]['thumbnail'] !== '') {
+                $rows[0]['thumbnail'] = new FileUploaded('', $rows[0]['thumbnail']);
 
                 $post = Post::createFromArrayAssoc($rows[0]);
                 foreach ($rows as $r) {

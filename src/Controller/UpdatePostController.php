@@ -40,7 +40,7 @@ class UpdatePostController
                 ->type('/v1/errors/wrong_input_data')
                 ->title('wrong_input_data')
                 ->status(400)
-                ->detail('the post [' . $inputs['id'] . '] was not updated, no sufficient or invalid input data provided')
+                ->detail('post not updated, no sufficient or invalid input data provided')
                 ->jsonSend($iie->getErrorMessages());
         }
 
@@ -53,7 +53,6 @@ class UpdatePostController
                 ->status(200)
                 ->detail('post [' . $post->title() . '] successfully updated with the following data')
                 ->jsonSend(["post" => $post->toMap()]);
-
         } catch (\Throwable $th) {
             error_log('Error occurred -> '
                 . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);

@@ -30,7 +30,7 @@ class DeletePostController
                 ->type('/v1/errors/wrong_input_data')
                 ->title('wrong_input_data')
                 ->status(400)
-                ->detail('the post [' . $inputs['id'] . '] was not deleted, no sufficient or invalid input data provided')
+                ->detail('post not deleted, no sufficient or invalid input data provided')
                 ->jsonSend($iie->getErrorMessages());
         } catch (NotFoundException $nfe) {
             return $responseHandler
@@ -52,10 +52,12 @@ class DeletePostController
                     ->status(200)
                     ->detail('post [' . $post->title() . '] was successfully deleted')
                     ->jsonSend(["post" => $post->toMapShort()]);
-            } else
+            } else {
                 throw new \Error('No valid post object to be deleted ');
+            }
         } catch (\Throwable $th) {
-            error_log('Error occurred -> ' . "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
+            error_log('Error occurred -> ' .
+                "File: {$th->getFile()}:{$th->getLine()}, message: {$th->getMessage()}" . PHP_EOL);
             return $responseHandler
                 ->type('/v1/errors/post_deletion_failure')
                 ->title('post_not_deleted')
