@@ -12,6 +12,12 @@ use Throwable;
 
 class ListCategoriesController
 {
+    /**
+     * @OA\Get(
+     *     path="/v1/list/categories",
+     *     @OA\Response(response="200", description="List all existing categories route")
+     * )
+     */
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $responseHandler = new ResponseHandler();

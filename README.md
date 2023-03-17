@@ -28,6 +28,7 @@ GET: `/v1/posts/slug/{slug}` - ;
 POST: `/v1/post/{pid}/addto/{cid}` - ;  
 GET: `/v1/apidocs` - ;
 
+The documentation in HTML format is accessible at the address: `http://HOSTNAME/ApiDocsUI/`  
 ### API Documentation
 
 ## Configuration

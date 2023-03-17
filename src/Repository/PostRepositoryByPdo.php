@@ -14,10 +14,9 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
      */
     public function store(Post $post): Post|false
     {
-        /** @todo To be moved to QueryBuilder */
         try {
-            $this->findById($post->id());
-            $query = <<<UPDATEQ
+            if ($this->findById($post->id()) instanceof Post) {
+                $query = <<<UPDATEQ
                 UPDATE posts SET 
                     title = :title, 
                     slug = :slug,
@@ -27,7 +26,10 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
                     posted_at = :posted_at                  
                     WHERE id = :id
             UPDATEQ;
+            }
         } catch (NotFoundException $nfe) {
+            error_log('Error occurred -> ' .
+                "File: {$nfe->getFile()}:{$nfe->getLine()}, message: {$nfe->getMessage()}" . PHP_EOL);
             $query = <<<INSERTQ
             INSERT INTO posts (id, title, slug, content, thumbnail, author, posted_at)
                 VALUES (:id, :title, :slug, :content, :thumbnail, :author, :posted_at);
@@ -44,10 +46,9 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
             'posted_at' => $post->postedAt()->format('Y-m-d H:i:s')
         ];
 
-        if (($this->pdo->prepare($query))->execute($parameters)) {
+        if (isset($query) && ($this->pdo->prepare($query))->execute($parameters)) {
             return $post;
         };
-
         return false;
     }
 
@@ -75,6 +76,7 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
                 $rows[0]['thumbnail'] = new FileUploaded('', $rows[0]['thumbnail']);
 
                 $post = Post::createFromArrayAssoc($rows[0]);
+
                 foreach ($rows as $r) {
                     if ($r['cid'] && $r['name']) {
                         $post->addCategory(new Category($r['cid'], $r['name'], ''));
@@ -99,20 +101,24 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
                 $th->getFile() . ':' . $th->getLine() . PHP_EOL . $th->getMessage());
         }
 
-        $query = 'DELETE FROM posts_categories WHERE id_post = :id; DELETE FROM posts WHERE id = :id';
+        $queries = [
+            'DELETE FROM posts_categories WHERE id_post = :id;',
+            'DELETE FROM posts WHERE id = :id'
+        ];
+
         try {
             $this->pdo->beginTransaction();
-            $statement = $this->pdo->prepare($query);
             $parameters = ['id' => $pid];
-
-            if ($statement->execute($parameters)) {
-                $this->pdo->commit();
-                return true;
+            foreach ($queries as $query) {
+                $statement = $this->pdo->prepare($query);
+                $statement->execute($parameters);
             }
+            $this->pdo->commit();
+            return true;
         } catch (\PDOException $pdoe) {
+            $this->pdo->rollBack();
             error_log('A problem with the post/category deletion occurred:: ' .
                 $pdoe->getFile() . ':' . $pdoe->getLine() . PHP_EOL . $pdoe->getMessage());
-            $this->pdo->rollBack();
         }
         return false;
     }
@@ -123,15 +129,23 @@ class PostRepositoryByPdo extends RepositoryByPdo implements PostRepositoryInter
     public function findBySlug(string $slug): Post|false
     {
         $query = 'SELECT * FROM posts WHERE slug = :slug';
-        $statement = $this->pdo->prepare($query);
+
         $parameters = ['slug' => $slug];
 
-        if ($statement->execute($parameters)) {
+        try {
+            $statement = $this->pdo->prepare($query);
+            $statement->execute($parameters);
             $inputs = $statement->fetch();
-            if ($inputs && count($inputs) > 0) {
+            if ($inputs) {
+                if (isset($inputs['thumbnail']) && $inputs['thumbnail'] !== '') {
+                    $inputs['thumbnail'] = new FileUploaded('', $inputs['thumbnail']);
+                }
+
                 return Post::createFromArrayAssoc($inputs);
             }
-        };
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+        }
         return false;
     }
 }

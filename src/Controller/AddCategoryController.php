@@ -11,8 +11,16 @@ use BlogPostsHandling\Api\Validator\{InvalidInputsException,CategoryInputValidat
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+use OpenApi\Annotations as OA;
+
 class AddCategoryController
 {
+    /**
+     * @OA\Post(
+     *     path="/v1/new/category",
+     *     @OA\Response(response="201", description="Adding a new category to the blog")
+     * )
+     */
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $inputs = json_decode($request->getBody()->getContents(), true);

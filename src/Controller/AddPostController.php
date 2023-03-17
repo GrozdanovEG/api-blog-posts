@@ -13,6 +13,12 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class AddPostController
 {
+    /**
+     * @OA\Post(
+     *     path="/v1/new/post",
+     *     @OA\Response(response="201", description="Adding a new post to the blog route")
+     * )
+     */
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $inputs = json_decode($request->getBody()->getContents(), true);

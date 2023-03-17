@@ -14,6 +14,12 @@ use BlogPostsHandling\Api\Validator\{PostInputValidator,InvalidInputsException};
 
 class UpdatePostController
 {
+    /**
+     * @OA\Put(
+     *     path="/v1/update/post/{id}",
+     *     @OA\Response(response="200", description="Updating a post data by given id route")
+     * )
+     */
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $inputs = json_decode($request->getBody()->getContents(), true);

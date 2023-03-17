@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BlogPostsHandling\Api\Controller;
 
-use _PHPStan_e0e4f009c\Nette\Neon\Exception;
 use DI\NotFoundException;
 use BlogPostsHandling\Api\Entity\Post;
 use BlogPostsHandling\Api\Repository\PostRepositoryByPdo;
@@ -17,6 +16,12 @@ class GetPostsBySlugController
 {
     public function __invoke(Request $request, Response $response, $args): Response
     {
+        /**
+         * @OA\Get(
+         *     path="/v1/posts/slug/{slug}",
+         *     @OA\Response(response="200", description="Fetching a post data by given slug route")
+         * )
+         */
         $inputs = json_decode($request->getBody()->getContents(), true);
         $inputs['slug'] = $args['slug'] ?? $inputs['slug'] ?? null;
 

@@ -14,6 +14,12 @@ use BlogPostsHandling\Api\Validator\{PostCategoryInputValidator,InvalidInputsExc
 
 class AddCategoryToAPostController
 {
+    /**
+     * @OA\Post(
+     *     path="/v1/post/{pid}/addto/{cid}",
+     *     @OA\Response(response="201", description="Adding a post to a new category route")
+     * )
+     */
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $inputs = json_decode($request->getBody()->getContents(), true);
@@ -38,10 +44,10 @@ class AddCategoryToAPostController
                 ->jsonSend($iie->getErrorMessages());
         } catch (NotFoundException $nfe) {
             return $responseHandler
-                ->type('/v1/errors/post_slug_not_found')
-                ->title('invalid_post_slug')
+                ->type('/v1/errors/entity_not_found')
+                ->title('entity_not_found')
                 ->status(404)
-                ->detail($nfe->getMessage() . 'Nothing to be retrieved. ')
+                ->detail($nfe->getMessage())
                 ->jsonSend();
         }
 

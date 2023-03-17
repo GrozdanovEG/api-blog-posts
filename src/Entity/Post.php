@@ -39,10 +39,12 @@ class Post
 
     public static function createFromArrayAssoc(array $array): self
     {
-        $postedAtString = $array['posted_at'] ?? $array['postedAt'] ?? null;
-        $postedAt = ($postedAtString ) ?
-            (DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $postedAtString)) :
+        $postedAt = $array['posted_at'] ?? $array['postedAt'] ?? null;
+        if (! $postedAt instanceof DateTimeImmutable) {
+            $postedAt = ($postedAt) ?
+            (DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $postedAt)) :
             (new DateTimeImmutable('now'));
+        }
         return new self(
             ($array['id'] ?? $array['id_post'] ?? Uuid::uuid4()->toString()),
             ($array['title'] ?? 'no title provided'),
