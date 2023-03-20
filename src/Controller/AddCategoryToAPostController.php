@@ -17,7 +17,7 @@ class AddCategoryToAPostController
     /**
      * @OA\Post(
      *     path="/v1/post/{pid}/addto/{cid}",
-     *     @OA\Response(response="201", description="Adding a post to a new category route")
+     *     @OA\Response(response="201", description="Adding a category to a post route")
      * )
      */
     public function __invoke(Request $request, Response $response, $args): Response

@@ -14,6 +14,8 @@ use BlogPostsHandling\Api\Controller\OpenApiDocController;
 /* Application routes  */
 /* if condition added upon suggestion by PHPStan */
 if (isset($app)) {
+    $app->redirect('/', '/v1', 301);
+
     $app->get('/v1', HomeController::class);
 
     $app->post('/v1/new/category', AddCategoryController::class);
